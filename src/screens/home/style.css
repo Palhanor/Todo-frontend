@@ -1,0 +1,24 @@
+/* width */
+.campo_tarefas::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.campo_tarefas::-webkit-scrollbar-track {
+  background: #e8ecf0;
+}
+
+/* Handle */
+.campo_tarefas::-webkit-scrollbar-thumb {
+  background: #cbd7e3;
+}
+
+/* Handle on hover */
+.campo_tarefas::-webkit-scrollbar-thumb:hover {
+  background: #b3c5d6;
+}
+
+.campo_tarefas {
+  scrollbar-color: #cbd7e3 #e8ecf0;
+  scrollbar-width: thin;
+}

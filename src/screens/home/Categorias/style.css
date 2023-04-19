@@ -1,0 +1,22 @@
+.inputCor {
+  border: none;
+  outline: none;
+  appearance: none;
+  vertical-align: top;
+  cursor: pointer;
+  width: 2rem;
+}
+.inputCor::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.inputCor::-moz-color-swatch-wrapper {
+  padding: 0;
+}
+.inputCor::-webkit-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+.inputCor::-moz-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
