@@ -7,6 +7,7 @@ import {
   formatarDataPrincipal,
   pegarDataAtual,
 } from "../../../utils/datas";
+import { tarefaDefault } from "../../../utils/modelos";
 
 export default function Tarefas({
   tarefas,
@@ -18,29 +19,19 @@ export default function Tarefas({
   setTarefaSelecionada,
 }: TarefasProps) {
   return (
-    <ul style={{ listStyle: "none", padding: "0", margin: "0" }}>
+    <ul className="list-none p-0 m-0">
       {filtrarTarefas(tarefas, abaTarefas, categoriasAtivas).map((val: any) => (
         <li key={val[0]}>
           <details open={true} style={{ cursor: "pointer" }}>
-            <summary
-              style={{
-                fontSize: ".9rem",
-                color: "#222",
-                margin: "1.5rem 0 .6rem",
-                fontWeight: "600",
-              }}
-            >
+            <summary className="text-base color-gray-700 mt-7 mb-4 font-semibold">
               {formatarDataPrincipal(val[0])} &#8226; {val[1].length}
             </summary>
             <ul>
               {val[1].map((tarefa: Tarefa) => (
                 <li
                   key={tarefa.id_tarefa}
+                  className="flex justify-between items-center cursor-pointer"
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    cursor: "pointer",
                     backgroundColor:
                       tarefa.id_tarefa === tarefaSelecionada.id_tarefa
                         ? "#ebeff5"
@@ -61,31 +52,22 @@ export default function Tarefas({
                       id="tarefas"
                       checked={!!tarefa.realizada}
                       onChange={() => editarTarefa(tarefa, "check")}
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                        cursor: "pointer",
-                        margin: "1rem",
-                      }}
+                      className="w-4 h-4 cursor-pointer m-4"
                     />
                   </div>
                   <div
-                    onClick={() => setTarefaSelecionada(() => tarefa)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      borderBottom: "1px solid lightgray",
-                      flexGrow: "1",
-                      padding: "1rem 1rem 1rem 0",
-                    }}
+                    onClick={() =>
+                      setTarefaSelecionada((tarefaAnterior) => {
+                        return tarefaAnterior.id_tarefa == tarefa.id_tarefa
+                          ? tarefaDefault
+                          : tarefa;
+                      })
+                    }
+                    className="flex items-center justify-between grow p-4 pl-0 border-b border-solid border-gray-300"
                   >
                     <h3
+                      className="inline-block text-base mx-3 font-normal"
                       style={{
-                        display: "inline-block",
-                        fontSize: "1rem",
-                        margin: "0 .5rem",
-                        fontWeight: "normal",
                         textDecoration: tarefa.realizada
                           ? "line-through"
                           : "none",
@@ -98,20 +80,9 @@ export default function Tarefas({
                     >
                       {tarefa.titulo}
                     </h3>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                    >
+                    <div className="flex items-center">
                       {tarefa.descricao && <BsFileText size={16} />}
-                      <span
-                        style={{
-                          fontSize: ".8rem",
-                          color: "#666666",
-                          marginLeft: ".6rem",
-                        }}
-                      >
+                      <span className="text-sm text-gray-400 ml-3">
                         {formatarData(tarefa.data_final)}
                       </span>
                     </div>

@@ -111,35 +111,11 @@ export default function Categorias({
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: ".4rem",
-        }}
-      >
-        <h2
-          style={{
-            fontSize: "1rem",
-            margin: "1rem 0 .6rem",
-            fontWeight: "500",
-          }}
-        >
-          Categorias
-        </h2>
-        <div style={{ display: "flex" }}>
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-md mt-4 mb-3 font-normal">Categorias</h2>
+        <div className="flex">
           <button
-            style={{
-              padding: ".2rem",
-              borderRadius: "5px",
-              backgroundColor: "transparent",
-              border: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              marginRight: ".3rem",
-            }}
+            className="p-1 rounded-sm bg-transparent border-none cursor-pointer flex items-center mr-1"
             onClick={() => {
               setCategoriasAtivas(() => [
                 0,
@@ -150,16 +126,7 @@ export default function Categorias({
             <BiCheckboxChecked size={24} />
           </button>
           <button
-            style={{
-              padding: ".2rem",
-              borderRadius: "5px",
-              backgroundColor: "transparent",
-              border: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              marginRight: ".3rem",
-            }}
+            className="p-1 rounded-sm bg-transparent border-none cursor-pointer flex items-center mr-1"
             onClick={() => {
               setCategoriasAtivas(() => []);
             }}
@@ -172,15 +139,7 @@ export default function Categorias({
                 setEdicaoCategoria(() => categoriaDefault);
               setNovaCategoria((prev) => !prev);
             }}
-            style={{
-              padding: ".2rem",
-              borderRadius: "5px",
-              backgroundColor: "transparent",
-              border: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-            }}
+            className="p-1 rounded-sm bg-transparent border-none cursor-pointer flex items-center"
           >
             {novaCategoria ? (
               <BiMinusCircle size={19} />
@@ -191,27 +150,14 @@ export default function Categorias({
         </div>
       </div>
       {(novaCategoria || !!edicaoCategoria.id_categoria) && (
-        <div style={{ marginBottom: ".8rem" }}>
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              alignItems: "center",
-              marginBottom: ".4rem",
-            }}
-          >
+        <div className="mb-3">
+          <div className="flex gap-2.5 items-center mb-2">
             <input
               type="text"
               placeholder="Nome da categoria"
               value={nomeCategoria}
               onChange={(e) => setNomeCategoria(() => e.target.value)}
-              style={{
-                flexGrow: "1",
-                outline: "none",
-                padding: ".4rem",
-                borderRadius: "5px",
-                border: "1px solid gray",
-              }}
+              className="grow outline-none p-2 rounded-md border-solid border border-gray-300"
             />
             <input
               type="color"
@@ -220,35 +166,21 @@ export default function Categorias({
               onChange={(e) => setCorCategoria(() => e.target.value)}
             />
           </div>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div className="flex gap-2.5">
             {novaCategoria && (
               <button
                 type="submit"
-                style={{
-                  border: "none",
-                  borderRadius: "5px",
-                  width: "100%",
-                  backgroundColor: "#419e31",
-                  padding: ".5rem",
-                  cursor: "pointer",
-                }}
+                className="border-none rounded-md w-full bg-[#419e31] p-3 cursor-pointer"
                 onClick={inserirCategoria}
               >
-                Nova categoria
+                Adicionar
               </button>
             )}
             {!!edicaoCategoria.id_categoria && (
               <>
                 <button
                   type="submit"
-                  style={{
-                    border: "none",
-                    borderRadius: "5px",
-                    width: "100%",
-                    backgroundColor: "#419e31",
-                    padding: ".5rem",
-                    cursor: "pointer",
-                  }}
+                  className="border-none rounded-md w-full bg-[#419e31] p-3 cursor-pointer"
                   onClick={() =>
                     editarCategoria({
                       id_categoria: edicaoCategoria.id_categoria,
@@ -257,58 +189,32 @@ export default function Categorias({
                     })
                   }
                 >
-                  Editar categoria
+                  Editar
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    border: "none",
-                    borderRadius: "5px",
-                    width: "100%",
-                    backgroundColor: "#e23936",
-                    padding: ".5rem",
-                    cursor: "pointer",
-                  }}
+                  className="border-none rounded-md w-full bg-[#e23936] p-3 cursor-pointer"
                   onClick={() => excluirCategoria(edicaoCategoria.id_categoria)}
                 >
-                  Apagar categoria
+                  Apagar
                 </button>
               </>
             )}
           </div>
         </div>
       )}
-      <ul
-        style={{
-          listStyle: "none",
-          // overflow: "auto",
-          // scrollbarWidth: "thin",
-          // paddingRight: "5px",
-          // height: "42vh",
-        }}
-      >
+      <ul className="list-none">
         <li
           key={categoriaDefault.id_categoria}
+          className="p-0.5 pl-2 w-full box-border text-base cursor-pointer mb-3 rounded-md capitalize"
           style={{
-            padding: "2px 2px 2px 10px",
-            width: "100%",
-            boxSizing: "border-box",
-            fontSize: ".9rem",
-            cursor: "pointer",
-            marginBottom: ".6rem",
-            borderRadius: "5px",
-            textTransform: "capitalize",
             backgroundColor: `#${categoriaDefault.cor}`,
           }}
           onClick={() => selecaoCategoria(categoriaDefault.id_categoria)}
         >
           <div
+            className="flex justify-between items-center p-2 rounded-md"
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: ".5rem",
-              borderRadius: "3px",
               backgroundColor: categoriasAtivas.includes(
                 categoriaDefault.id_categoria
               )
@@ -316,34 +222,21 @@ export default function Categorias({
                 : "#e2e9f0",
             }}
           >
-            <h4 style={{ fontSize: ".9rem", fontWeight: "500" }}>
-              Sem categoria
-            </h4>
+            <h4 className="text-small font-medium">Sem categoria</h4>
           </div>
         </li>
         {categorias.map((categoria) => (
           <li
             key={categoria.id_categoria}
+            className="p-0.5 pl-2 w-full box-border text-base cursor-pointer mb-3 rounded-md capitalize"
             style={{
-              padding: "2px 2px 2px 10px",
-              width: "100%",
-              boxSizing: "border-box",
-              fontSize: ".9rem",
-              cursor: "pointer",
-              marginBottom: ".6rem",
-              borderRadius: "5px",
-              textTransform: "capitalize",
               backgroundColor: `#${categoria.cor}`,
             }}
             onClick={() => selecaoCategoria(categoria.id_categoria)}
           >
             <div
+              className="flex justify-between items-center p-2 rounded-md"
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: ".5rem",
-                borderRadius: "3px",
                 backgroundColor: categoriasAtivas.includes(
                   categoria.id_categoria
                 )
@@ -351,7 +244,7 @@ export default function Categorias({
                   : "#e2e9f0",
               }}
             >
-              <h4 style={{ fontSize: ".9rem", fontWeight: "500" }}>
+              <h4 className="text-small font-medium">
                 {categoria.nome_categoria}
               </h4>
               <span

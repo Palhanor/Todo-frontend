@@ -10,8 +10,13 @@ export default function Editor({
   setTarefaSelecionada,
   requisidor,
   editarTarefa,
+  setRedimensionandoFerramentas,
+  setRedimensionandoEdicao,
+  movimentarColunaEsquerda,
+  movimentarColunaDireita,
   tarefaSelecionada,
   categorias,
+  colEdicao,
 }: EditorProps) {
   const [selectCategoria, setSelectCategoria] = useState(
     tarefaSelecionada.categoria || ""
@@ -39,25 +44,22 @@ export default function Editor({
 
   return (
     <div
+      className="bg-[#fcfeff] h-screen p-4 pt-3 box-border"
       style={{
-        width: "30vw",
-        // width: "35vw",
-        backgroundColor: "#fcfeff",
-        height: "100vh",
-        padding: "1rem 2rem 2rem",
-        boxSizing: "border-box",
+        width: colEdicao,
+      }}
+      onMouseUp={() => {
+        setRedimensionandoFerramentas(() => false);
+        setRedimensionandoEdicao(() => false);
+      }}
+      onMouseMove={(e) => {
+        movimentarColunaEsquerda(e);
+        movimentarColunaDireita(e);
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          margin: "1rem 0",
-        }}
-      >
+      <div className="flex justify-between items-center my-3">
         <span
-          style={{ cursor: "pointer" }}
+          className="cursor-pointer"
           onClick={() =>
             setTarefaSelecionada(() => {
               return tarefaDefault;
@@ -68,14 +70,7 @@ export default function Editor({
         </span>
         <select
           value={selectCategoria}
-          style={{
-            padding: ".6rem",
-            border: "none",
-            backgroundColor: "#e2e9f0",
-            outline: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
+          className="p-3 border-none bg-[#e2e9f0] outline-none rounded-md coursor-pointer"
           onChange={(e) =>
             editarTarefa(
               {
@@ -98,8 +93,8 @@ export default function Editor({
           ))}
         </select>
       </div>
-      <div style={{ width: "100%" }}>
-        <div style={{ display: "flex" }}>
+      <div className="w-full">
+        <div className="flex">
           <input
             required
             type="text"
@@ -114,14 +109,7 @@ export default function Editor({
                 "dados"
               );
             }}
-            style={{
-              flexGrow: "1",
-              padding: ".2rem 0",
-              backgroundColor: "transparent",
-              border: "none",
-              fontSize: "1.1rem",
-              outline: "none",
-            }}
+            className="grow py-1 bg-transparent border-none text-base outline-none"
           />
           <input
             required
@@ -136,35 +124,20 @@ export default function Editor({
                 "dados"
               );
             }}
-            style={{
-              width: "8rem",
-              padding: ".2rem",
-              backgroundColor: "transparent",
-              border: "none",
-              outline: "none",
-              cursor: "pointer",
-              fontSize: ".9rem",
-            }}
+            className="w-32 p-1 bg-transparent border-none outline-none cursor-pointer text-base text-gray-500"
           />
         </div>
         <textarea
           cols={30}
           rows={10}
-          style={{
-            width: "100%",
-            height: "70vh",
-            backgroundColor: "transparent",
-            border: "none",
-            resize: "none",
-            color: "#444",
-            outline: "none",
-            marginTop: ".8rem",
-          }}
+          className="w-full h-[70vh] bg-transparent border-none outline-none text-gray-500 resize-none mt-3"
           value={tarefaSelecionada.descricao}
           onChange={(e) => {
             setTarefaSelecionada((atual: Tarefa) => {
               return { ...atual, descricao: e.target.value };
             });
+          }}
+          onBlur={(e) => {
             editarTarefa(
               { ...tarefaSelecionada, descricao: e.target.value },
               "dados"
@@ -174,22 +147,10 @@ export default function Editor({
         <div>
           <button
             type="submit"
-            style={{
-              position: "absolute",
-              bottom: "2rem",
-              right: "2rem",
-              cursor: "pointer",
-              padding: ".8rem 1.2rem",
-              backgroundColor: "#e23936",
-              border: "none",
-              borderRadius: "5px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+            className="absolute bottom-8 right-8 cursor-pointer py-3 px-5 bg-[#e23936] border-none rounded-md flex items-center justify-center"
             onClick={() => excluirTarefa(tarefaSelecionada.id_tarefa)}
           >
-            <BsTrash3 /> <span style={{ marginLeft: ".4rem" }}>Excluir</span>
+            <BsTrash3 /> <span className="ml-2">Excluir</span>
           </button>
         </div>
       </div>

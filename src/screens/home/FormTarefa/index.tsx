@@ -46,48 +46,25 @@ export default function FormTarefa({
   };
 
   return (
-    <form
-      onSubmit={inserirTarefa}
-      style={{ display: "flex", width: "100%", gap: "10px" }}
-    >
+    <form onSubmit={inserirTarefa} className="flex w-full gap-2.5">
       <input
         required
         type="text"
         placeholder="Insira uma nova tarefa"
         value={titulo}
         onChange={(e) => setTitulo(() => e.target.value)}
-        style={{
-          flexGrow: "1",
-          padding: ".8rem",
-          border: "none",
-          borderRadius: "5px",
-          backgroundColor: "#e2e9f0",
-          outline: "none",
-        }}
+        className="grow p-4 border-none rounded-md bg-[#e2e9f0] outline-none"
       />
       <input
         required
         type="date"
         value={dataFinal}
         onChange={(e) => setDataFinal(() => e.target.value)}
-        style={{
-          width: "8rem",
-          padding: ".8rem",
-          border: "none",
-          borderRadius: "5px",
-          backgroundColor: "#e2e9f0",
-          outline: "none",
-        }}
+        className="p-4 border-none rounded-md bg-[#e2e9f0] outline-none"
       />
       <button
         type="submit"
-        style={{
-          padding: ".8rem",
-          border: "none",
-          borderRadius: "5px",
-          backgroundColor: "#86a5c3",
-          cursor: "pointer",
-        }}
+        className="p-4 border-none rounded-md bg-[#86a5c3] outline-none cursor-pointer"
       >
         Adicionar
       </button>

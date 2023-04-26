@@ -13,54 +13,22 @@ export default function Ferramentas() {
   };
 
   return (
-    <span style={{ cursor: "pointer", position: "relative" }}>
+    <span className="cursor-pointer relative">
       <FiSettings size={18} onClick={() => setFerramentas((prev) => !prev)} />
       {ferramentas && (
-        <div
-          style={{
-            backgroundColor: "#c2d2e1",
-            width: "12rem",
-            position: "absolute",
-            top: "0.5rem",
-            left: "-12.5rem",
-            borderRadius: "10px",
-            display: "flex",
-            flexDirection: "column",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-            border: "1px solid  #b1c5d9",
-          }}
-        >
+        <div className="bg-[#c2d2e1] w-48 absolute top-2 -left-48 rounded-lg flex flex-col shadow">
           <div
             onClick={() => navigate("/user")}
-            style={{
-              cursor: "pointer",
-              padding: ".8rem 1.2rem",
-              backgroundColor: "#c2d2e1",
-              border: "none",
-              borderRadius: "10px 10px 0 0",
-              textAlign: "left",
-              display: "flex",
-              alignItems: "center",
-            }}
+            className="cursor-pointer py-4 px-5 bg-[#c2d2e1] border-none flex items-center rounded-t-md text-left hover:bg-[#b8c8d7]"
           >
             <BiUserCircle size={18} />
-            <span style={{ marginLeft: ".4rem" }}>Configurações</span>
+            <span className="ml-2">Configurações</span>
           </div>
           <div
             onClick={deslogarUsuario}
-            style={{
-              cursor: "pointer",
-              padding: ".8rem 1.2rem",
-              backgroundColor: "#c2d2e1",
-              border: "none",
-              textAlign: "left",
-              display: "flex",
-              alignItems: "center",
-              borderRadius: "0 0 10px 10px",
-            }}
+            className="cursor-pointer py-4 px-5 bg-[#c2d2e1] border-none flex items-center rounded-b-md text-left hover:bg-[#b8c8d7]"
           >
-            <BiLogOut size={18} />{" "}
-            <span style={{ marginLeft: ".4rem" }}>Sair</span>
+            <BiLogOut size={18} /> <span className="ml-2">Sair</span>
           </div>
         </div>
       )}

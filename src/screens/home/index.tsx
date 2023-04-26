@@ -1,8 +1,11 @@
-// TODO: Criar rotas 404 no React Router DOM
+// TODO: Extrair os estilos Tailwind para objetos importados
+// TODO: Adicionar as interações com o hover e afins
+// TODO: Fazer os ajustes de responsividade no sistema
+
 // TODO: Salvar as cores dentro do MySQL como 7 caracteres
-// TODO: Usar um sistema de estilização (Tailwinds) e melhorar o design do sistema
 
 // TODO: Adicionar os números de tarefas ao lados das visualizações - numero aplicando os filtros (categoria, busca e data)
+// TODO: Adicionar os numeros das categorias e mudar para o campo de edicao no hover
 
 // TODO: Implementar um filtro de busca por termos - acima de visualizações
 // TODO: Implementar um filtro por prazos (dia especifico) - acima de visualizações
@@ -32,6 +35,16 @@ export default function Home() {
   const [categoriasAtivas, setCategoriasAtivas] = useState<number[]>([]);
   const [abaTarefas, setAbaTarefas] = useState<abas>("atuais");
 
+  const [colFerramentas, setColFerramentas] = useState<number>(
+    window.innerWidth / 4
+  );
+  const [redimensionandoFerramentas, setRedimensionandoFerramentas] =
+    useState<boolean>(false);
+
+  const [colEdicao, setColEdicao] = useState<number>(window.innerWidth / 4);
+  const [redimensionandoEdicao, setRedimensionandoEdicao] =
+    useState<boolean>(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,6 +52,33 @@ export default function Home() {
     listarTarefas();
     listarCategorias();
   }, []);
+
+  const movimentarColunaEsquerda = (
+    e: React.MouseEvent<HTMLElement, MouseEvent>
+  ) => {
+    if (redimensionandoFerramentas) {
+      const screenWidth = window.innerWidth;
+      let novaLargura: number;
+      if (e.clientX <= screenWidth / 5) novaLargura = screenWidth / 5;
+      else if (e.clientX >= screenWidth / 3) novaLargura = screenWidth / 3;
+      else novaLargura = e.clientX;
+      setColFerramentas(() => novaLargura);
+    }
+  };
+
+  const movimentarColunaDireita = (
+    e: React.MouseEvent<HTMLElement, MouseEvent>
+  ) => {
+    if (redimensionandoEdicao) {
+      const screenWidth = window.innerWidth;
+      const tamanho = screenWidth - e.clientX;
+      let novaLargura: number;
+      if (tamanho <= screenWidth / 5) novaLargura = screenWidth / 5;
+      else if (tamanho >= screenWidth / 3) novaLargura = screenWidth / 3;
+      else novaLargura = tamanho;
+      setColEdicao(() => novaLargura);
+    }
+  };
 
   const editarTarefaCheck = (tarefa: Tarefa) => {
     setTarefas((current: Tarefa[]) =>
@@ -160,72 +200,33 @@ export default function Home() {
   return (
     <>
       {!!user.id_usuario && (
-        <div style={{ display: "flex" }}>
+        <div className="flex">
           <aside
-            style={{
-              width: "20vw",
-              // width: "25vw",
-              padding: "1.5rem",
-              boxSizing: "border-box",
-              height: "100vh",
-              borderRight: "1px solid #e1e7e9",
-              justifyContent: "space-between",
-              backgroundColor: "#e2e9f0",
-              overflow: "none",
+            style={{ width: colFerramentas }}
+            className="p-5 pr-4 h-screen box-border justify-between bg-[#e2e9f0]"
+            onMouseUp={() => {
+              setRedimensionandoFerramentas(() => false);
+              setRedimensionandoEdicao(() => false);
+            }}
+            onMouseMove={(e) => {
+              movimentarColunaEsquerda(e);
+              movimentarColunaDireita(e);
             }}
           >
             <div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <h1
-                  style={{
-                    fontSize: "1.2rem",
-                    margin: ".5rem 0",
-                    fontWeight: "600",
-                  }}
-                >
-                  {user.nome}
-                </h1>
+              <div className="flex justify-between items-center">
+                <h1 className="text-lg my-2 font-semibold">{user.nome}</h1>
                 <Ferramentas />
               </div>
-              <p
-                style={{
-                  display: "block",
-                  fontSize: ".9rem",
-                  color: "#555",
-                  marginBottom: "1.5rem",
-                }}
-              >
-                {user.email}
-              </p>
+              <p className="block text-md text-slate-700 mb-4">{user.email}</p>
               <div>
-                <h2
-                  style={{
-                    fontSize: "1rem",
-                    margin: "1rem 0 .6rem",
-                    fontWeight: "500",
-                  }}
-                >
-                  Visualizações
-                </h2>
-                <ul style={{ listStyle: "none" }}>
+                <h2 className="text-md mt-4 mb-3 font-normal">Visualizações</h2>
+                <ul className="list-none">
                   {["atuais", "atrasadas", "realizadas"].map((visualizacao) => (
                     <li
                       key={visualizacao}
+                      className="px-3 py-2 w-full box-border text-normal cursor-pointer mb-2 rounded-md capitalize"
                       style={{
-                        padding: ".6rem .8rem",
-                        width: "100%",
-                        boxSizing: "border-box",
-                        fontSize: ".9rem",
-                        cursor: "pointer",
-                        marginBottom: ".4rem",
-                        borderRadius: "5px",
-                        textTransform: "capitalize",
                         backgroundColor:
                           visualizacao == abaTarefas
                             ? "#86a5c3"
@@ -247,27 +248,27 @@ export default function Home() {
               </div>
             </div>
           </aside>
-          <main
-            className="campo_tarefas"
-            style={{
-              flexGrow: "1",
-              padding: "0 2rem 2rem",
-              height: "100vh",
-              overflowY: "scroll",
-              boxSizing: "border-box",
-              backgroundColor: "#f7f9fa",
+          <div
+            className="bg-[#e2e9f0] w-1 h-screen cursor-col-resize"
+            onMouseDown={() => {
+              setRedimensionandoFerramentas(() => true);
             }}
+            onMouseUp={() => setRedimensionandoFerramentas(() => false)}
+            onMouseMove={movimentarColunaEsquerda}
+          ></div>
+          <main
+            onMouseUp={() => {
+              setRedimensionandoFerramentas(() => false);
+              setRedimensionandoEdicao(() => false);
+            }}
+            onMouseMove={(e) => {
+              movimentarColunaEsquerda(e);
+              movimentarColunaDireita(e);
+            }}
+            className="campo_tarefas grow px-5 pb-5 h-screen overflow-y-scroll box-border bg-[#f7f9fa]"
           >
             <div>
-              <h2
-                style={{
-                  fontSize: "1.1rem",
-                  margin: "1.5rem 0 1rem",
-                  fontWeight: "600",
-                }}
-              >
-                Nova Tarefa
-              </h2>
+              <h2 className="text-lg mt-5 mb-4 font-semibold">Nova Tarefa</h2>
               <FormTarefa
                 user={user}
                 requisidor={requisidor}
@@ -276,14 +277,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <h2
-                style={{
-                  fontSize: "1.1rem",
-                  margin: "2rem 0 1rem",
-                  fontWeight: "600",
-                  textTransform: "capitalize",
-                }}
-              >
+              <h2 className="text-lg mt-5 mb-4 font-semibold capitalize">
                 Tarefas {abaTarefas}
               </h2>
               <Tarefas
@@ -298,14 +292,29 @@ export default function Home() {
             </div>
           </main>
           {!!tarefaSelecionada?.id_tarefa && (
-            <Editor
-              setTarefas={setTarefas}
-              setTarefaSelecionada={setTarefaSelecionada}
-              requisidor={requisidor}
-              editarTarefa={editarTarefa}
-              tarefaSelecionada={tarefaSelecionada}
-              categorias={categorias}
-            />
+            <>
+              <div
+                className="bg-[#fcfeff] w-1 h-screen cursor-col-resize"
+                onMouseDown={() => {
+                  setRedimensionandoEdicao(() => true);
+                }}
+                onMouseUp={() => setRedimensionandoEdicao(() => false)}
+                onMouseMove={movimentarColunaDireita}
+              ></div>
+              <Editor
+                setTarefas={setTarefas}
+                setTarefaSelecionada={setTarefaSelecionada}
+                requisidor={requisidor}
+                editarTarefa={editarTarefa}
+                setRedimensionandoFerramentas={setRedimensionandoFerramentas}
+                setRedimensionandoEdicao={setRedimensionandoEdicao}
+                movimentarColunaEsquerda={movimentarColunaEsquerda}
+                movimentarColunaDireita={movimentarColunaDireita}
+                tarefaSelecionada={tarefaSelecionada}
+                categorias={categorias}
+                colEdicao={colEdicao}
+              />
+            </>
           )}
         </div>
       )}
