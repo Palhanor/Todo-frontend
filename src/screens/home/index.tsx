@@ -1,15 +1,17 @@
-// TODO: Extrair os estilos Tailwind para objetos importados
-// TODO: Adicionar as interações com o hover e afins
-// TODO: Fazer os ajustes de responsividade no sistema
-
-// TODO: Salvar as cores dentro do MySQL como 7 caracteres
-
-// TODO: Adicionar os números de tarefas ao lados das visualizações - numero aplicando os filtros (categoria, busca e data)
-// TODO: Adicionar os numeros das categorias e mudar para o campo de edicao no hover
+// TODO: Criar um load para quando estiver esperando autenticacao
+// TODO: Adicionar o sistema para visualizar a senha inserida
 
 // TODO: Implementar um filtro de busca por termos - acima de visualizações
 // TODO: Implementar um filtro por prazos (dia especifico) - acima de visualizações
 // TODO: Implementar um limpador do filtro de prazos (dia especifico) - acima de visualizações
+
+// TODO: Ajeitar a tela de configuracoes de usuario (dados, senha, apagar...)
+// TODO: Trabalhar nas paginas que faltam: erro e landingPage
+
+// TODO: Fazer os ajustes de responsividade no sistema
+
+// TODO: Fazer o tratamento dos erros no front-end antes de enviar os dados
+// TODO: Receber os erros do backend e exibir de uma forma melhorada
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +26,7 @@ import Usuario from "../../interfaces/usuario";
 import { abas, edicaoTarefa } from "../../interfaces/types";
 import Categoria from "../../interfaces/categoria";
 import "./style.css";
+import { filtrarTarefasCategoriasAbas } from "../../utils/tarefas";
 
 export default function Home() {
   const [user, setUser] = useState<Usuario>(userDefault);
@@ -197,13 +200,39 @@ export default function Home() {
     }
   };
 
+  const style = {
+    tela: "flex",
+    barraEsquerda: "p-5 pr-4 h-screen box-border justify-between bg-[#e2e9f0]",
+    usuario: "flex justify-between items-center",
+    nomeUsuario: "text-lg my-2 font-semibold",
+    email: "block text-md text-slate-700 mb-4",
+    tituloSecao: "text-md mt-4 mb-3 font-normal",
+    listaSecao: "list-none",
+    visualizacao:
+      "flex justify-between px-3 py-2 w-full box-border text-normal cursor-pointer mb-2 rounded-md capitalize",
+    central:
+      "campo_tarefas grow px-5 pb-5 h-screen overflow-y-scroll box-border bg-[#f7f9fa]",
+    titulo: "text-lg mt-5 mb-4 font-semibold",
+    redimensionador: (cor: string) =>
+      `bg-[${cor}] w-1 h-screen cursor-col-resize`,
+  };
+
+  const pegarNumeroTarefasVisualizacao = (nome: abas) => {
+    const listaTarefasFiltradas = filtrarTarefasCategoriasAbas(
+      tarefas,
+      nome,
+      categoriasAtivas
+    );
+    return listaTarefasFiltradas.length;
+  };
+
   return (
     <>
       {!!user.id_usuario && (
-        <div className="flex">
+        <div className={style.tela}>
           <aside
             style={{ width: colFerramentas }}
-            className="p-5 pr-4 h-screen box-border justify-between bg-[#e2e9f0]"
+            className={style.barraEsquerda}
             onMouseUp={() => {
               setRedimensionandoFerramentas(() => false);
               setRedimensionandoEdicao(() => false);
@@ -214,18 +243,18 @@ export default function Home() {
             }}
           >
             <div>
-              <div className="flex justify-between items-center">
-                <h1 className="text-lg my-2 font-semibold">{user.nome}</h1>
+              <div className={style.usuario}>
+                <h1 className={style.nomeUsuario}>{user.nome}</h1>
                 <Ferramentas />
               </div>
-              <p className="block text-md text-slate-700 mb-4">{user.email}</p>
+              <p className={style.email}>{user.email}</p>
               <div>
-                <h2 className="text-md mt-4 mb-3 font-normal">Visualizações</h2>
-                <ul className="list-none">
+                <h2 className={style.tituloSecao}>Visualizações</h2>
+                <ul className={style.listaSecao}>
                   {["atuais", "atrasadas", "realizadas"].map((visualizacao) => (
                     <li
                       key={visualizacao}
-                      className="px-3 py-2 w-full box-border text-normal cursor-pointer mb-2 rounded-md capitalize"
+                      className={style.visualizacao}
                       style={{
                         backgroundColor:
                           visualizacao == abaTarefas
@@ -234,7 +263,10 @@ export default function Home() {
                       }}
                       onClick={() => setAbaTarefas(() => visualizacao as abas)}
                     >
-                      {visualizacao}
+                      <span>{visualizacao}</span>
+                      <span>
+                        {pegarNumeroTarefasVisualizacao(visualizacao as abas)}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -249,7 +281,7 @@ export default function Home() {
             </div>
           </aside>
           <div
-            className="bg-[#e2e9f0] w-1 h-screen cursor-col-resize"
+            className={style.redimensionador("#e2e9f0")}
             onMouseDown={() => {
               setRedimensionandoFerramentas(() => true);
             }}
@@ -265,10 +297,10 @@ export default function Home() {
               movimentarColunaEsquerda(e);
               movimentarColunaDireita(e);
             }}
-            className="campo_tarefas grow px-5 pb-5 h-screen overflow-y-scroll box-border bg-[#f7f9fa]"
+            className={style.central}
           >
             <div>
-              <h2 className="text-lg mt-5 mb-4 font-semibold">Nova Tarefa</h2>
+              <h2 className={style.titulo}>Nova Tarefa</h2>
               <FormTarefa
                 user={user}
                 requisidor={requisidor}
@@ -277,9 +309,7 @@ export default function Home() {
               />
             </div>
             <div>
-              <h2 className="text-lg mt-5 mb-4 font-semibold capitalize">
-                Tarefas {abaTarefas}
-              </h2>
+              <h2 className={style.titulo}>Tarefas {abaTarefas}</h2>
               <Tarefas
                 tarefas={tarefas}
                 categorias={categorias}
@@ -294,7 +324,7 @@ export default function Home() {
           {!!tarefaSelecionada?.id_tarefa && (
             <>
               <div
-                className="bg-[#fcfeff] w-1 h-screen cursor-col-resize"
+                className={style.redimensionador("#fcfeff")}
                 onMouseDown={() => {
                   setRedimensionandoEdicao(() => true);
                 }}

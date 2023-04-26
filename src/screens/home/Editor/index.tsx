@@ -42,9 +42,26 @@ export default function Editor({
     }
   };
 
+  const style = {
+    barraDireita: "bg-[#fcfeff] h-screen p-4 pt-3 box-border",
+    campoSuperior: "flex justify-between items-center my-3",
+    fechar: "cursor-pointer",
+    selecaoCategoria:
+      "p-3 border-none bg-[#e2e9f0] outline-none rounded-md coursor-pointer",
+    campoInferior: "w-full",
+    tituloData: "flex",
+    titulo: "grow py-1 bg-transparent border-none text-base outline-none",
+    data: "w-32 p-1 bg-transparent border-none outline-none cursor-pointer text-base text-gray-500",
+    descricao:
+      "w-full h-[70vh] bg-transparent border-none outline-none text-gray-500 resize-none mt-3",
+    botao:
+      "absolute bottom-8 right-8 cursor-pointer py-3 px-5 bg-[#e23936] border-none rounded-md flex items-center justify-center",
+    ilustracao: "ml-2",
+  };
+
   return (
     <div
-      className="bg-[#fcfeff] h-screen p-4 pt-3 box-border"
+      className={style.barraDireita}
       style={{
         width: colEdicao,
       }}
@@ -57,9 +74,9 @@ export default function Editor({
         movimentarColunaDireita(e);
       }}
     >
-      <div className="flex justify-between items-center my-3">
+      <div className={style.campoSuperior}>
         <span
-          className="cursor-pointer"
+          className={style.fechar}
           onClick={() =>
             setTarefaSelecionada(() => {
               return tarefaDefault;
@@ -70,7 +87,7 @@ export default function Editor({
         </span>
         <select
           value={selectCategoria}
-          className="p-3 border-none bg-[#e2e9f0] outline-none rounded-md coursor-pointer"
+          className={style.selecaoCategoria}
           onChange={(e) =>
             editarTarefa(
               {
@@ -93,8 +110,8 @@ export default function Editor({
           ))}
         </select>
       </div>
-      <div className="w-full">
-        <div className="flex">
+      <div className={style.campoInferior}>
+        <div className={style.tituloData}>
           <input
             required
             type="text"
@@ -109,7 +126,7 @@ export default function Editor({
                 "dados"
               );
             }}
-            className="grow py-1 bg-transparent border-none text-base outline-none"
+            className={style.titulo}
           />
           <input
             required
@@ -124,13 +141,13 @@ export default function Editor({
                 "dados"
               );
             }}
-            className="w-32 p-1 bg-transparent border-none outline-none cursor-pointer text-base text-gray-500"
+            className={style.data}
           />
         </div>
         <textarea
           cols={30}
           rows={10}
-          className="w-full h-[70vh] bg-transparent border-none outline-none text-gray-500 resize-none mt-3"
+          className={style.descricao}
           value={tarefaSelecionada.descricao}
           onChange={(e) => {
             setTarefaSelecionada((atual: Tarefa) => {
@@ -147,10 +164,10 @@ export default function Editor({
         <div>
           <button
             type="submit"
-            className="absolute bottom-8 right-8 cursor-pointer py-3 px-5 bg-[#e23936] border-none rounded-md flex items-center justify-center"
+            className={style.botao}
             onClick={() => excluirTarefa(tarefaSelecionada.id_tarefa)}
           >
-            <BsTrash3 /> <span className="ml-2">Excluir</span>
+            <BsTrash3 /> <span className={style.ilustracao}>Excluir</span>
           </button>
         </div>
       </div>

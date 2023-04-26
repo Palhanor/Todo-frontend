@@ -18,31 +18,44 @@ export default function Tarefas({
   editarTarefa,
   setTarefaSelecionada,
 }: TarefasProps) {
+  const style = {
+    lista: "list-none p-0 m-0",
+    toggle: "cursor-pointer",
+    tituloData: "text-base color-gray-700 mt-7 mb-4 font-semibold",
+    tarefa: "flex justify-between items-center cursor-pointer",
+    check: "w-4 h-4 cursor-pointer m-4",
+    nomeContainer:
+      "flex items-center justify-between grow p-4 pl-0 border-b border-solid border-gray-300",
+    nome: "inline-block text-base mx-3 font-normal",
+    informacoes: "flex items-center",
+    data: "text-sm text-gray-400 ml-3",
+  };
+
   return (
-    <ul className="list-none p-0 m-0">
+    <ul className={style.lista}>
       {filtrarTarefas(tarefas, abaTarefas, categoriasAtivas).map((val: any) => (
         <li key={val[0]}>
-          <details open={true} style={{ cursor: "pointer" }}>
-            <summary className="text-base color-gray-700 mt-7 mb-4 font-semibold">
+          <details open={true} className={style.toggle}>
+            <summary className={style.tituloData}>
               {formatarDataPrincipal(val[0])} &#8226; {val[1].length}
             </summary>
             <ul>
               {val[1].map((tarefa: Tarefa) => (
                 <li
                   key={tarefa.id_tarefa}
-                  className="flex justify-between items-center cursor-pointer"
+                  className={style.tarefa}
                   style={{
                     backgroundColor:
                       tarefa.id_tarefa === tarefaSelecionada.id_tarefa
                         ? "#ebeff5"
                         : "transparent",
-                    borderLeft: `4px solid #${
+                    borderLeft: `4px solid ${
                       tarefa.categoria
                         ? categorias.find(
                             (categoria) =>
                               categoria.id_categoria == tarefa.categoria
                           )?.cor
-                        : "f7f9fa"
+                        : "#f7f9fa"
                     }`,
                   }}
                 >
@@ -52,7 +65,7 @@ export default function Tarefas({
                       id="tarefas"
                       checked={!!tarefa.realizada}
                       onChange={() => editarTarefa(tarefa, "check")}
-                      className="w-4 h-4 cursor-pointer m-4"
+                      className={style.check}
                     />
                   </div>
                   <div
@@ -63,10 +76,10 @@ export default function Tarefas({
                           : tarefa;
                       })
                     }
-                    className="flex items-center justify-between grow p-4 pl-0 border-b border-solid border-gray-300"
+                    className={style.nomeContainer}
                   >
                     <h3
-                      className="inline-block text-base mx-3 font-normal"
+                      className={style.nome}
                       style={{
                         textDecoration: tarefa.realizada
                           ? "line-through"
@@ -80,9 +93,9 @@ export default function Tarefas({
                     >
                       {tarefa.titulo}
                     </h3>
-                    <div className="flex items-center">
+                    <div className={style.informacoes}>
                       {tarefa.descricao && <BsFileText size={16} />}
-                      <span className="text-sm text-gray-400 ml-3">
+                      <span className={style.data}>
                         {formatarData(tarefa.data_final)}
                       </span>
                     </div>

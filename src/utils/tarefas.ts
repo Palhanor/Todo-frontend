@@ -28,7 +28,7 @@ const ordenarTarefas = (tarefasFiltradas: Tarefa[], abaAtiva: abas) => {
     });
 };
 
-const filtrarTarefasCategoriasAbas = (
+export const filtrarTarefasCategoriasAbas = (
     listaTarefas: Tarefa[],
     abaAtiva: abas,
     categoriasAtivas: number[]

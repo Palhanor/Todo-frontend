@@ -13,6 +13,7 @@
 
 ## AVANÇADOS
 
+- Adicionar os numeros das categorias e mudar para o campo de edicao no hover
 - Fazer validacao de dados (senha)
 - Verificar o logout no backend (?)
 - Adicinar outras opcoes de login (Google)

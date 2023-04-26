@@ -45,27 +45,32 @@ export default function FormTarefa({
     }
   };
 
+  const style = {
+    form: "flex w-full gap-2.5",
+    inputTarefa: "grow p-4 border-none rounded-md bg-[#e2e9f0] outline-none",
+    inputData: "p-4 border-none rounded-md bg-[#e2e9f0] outline-none",
+    botao:
+      "p-4 border-none rounded-md bg-[#86a5c3] outline-none cursor-pointer",
+  };
+
   return (
-    <form onSubmit={inserirTarefa} className="flex w-full gap-2.5">
+    <form onSubmit={inserirTarefa} className={style.form}>
       <input
         required
         type="text"
         placeholder="Insira uma nova tarefa"
         value={titulo}
         onChange={(e) => setTitulo(() => e.target.value)}
-        className="grow p-4 border-none rounded-md bg-[#e2e9f0] outline-none"
+        className={style.inputTarefa}
       />
       <input
         required
         type="date"
         value={dataFinal}
         onChange={(e) => setDataFinal(() => e.target.value)}
-        className="p-4 border-none rounded-md bg-[#e2e9f0] outline-none"
+        className={style.inputData}
       />
-      <button
-        type="submit"
-        className="p-4 border-none rounded-md bg-[#86a5c3] outline-none cursor-pointer"
-      >
+      <button type="submit" className={style.botao}>
         Adicionar
       </button>
     </form>

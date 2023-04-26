@@ -56,34 +56,28 @@ export default function Register() {
       });
   };
 
+  const style = {
+    tela: "bg-[#f7f9fa] h-screen pt-14 box-border",
+    container: "w-1/3 m-auto bg-white rounded-md shadow-lg box-border p-7 pt-6",
+    titulo: "text-center text-2xl font-semibold mt-2 mb-5",
+    label: "block mb-3",
+    input:
+      "w-full rounded-md p-3 border border-solid border-gray-400 mb-3 box-border outline-none",
+    botao:
+      "w-full p-4 border-none rounded-md bg-[#86a5c3] cursor-pointer mt-6 mb-8 hover:bg-[#7999b8]",
+    linkContainer:
+      "text-center w-5/6 m-auto text-small border-t border-solid border-gray-300 pt-6",
+    link: "text-small text-gray-400",
+  };
+
   return (
     <>
       {autenticado && (
-        <div
-          style={{
-            backgroundColor: "#f7f9fa",
-            height: "100vh",
-            paddingTop: "20vh",
-            boxSizing: "border-box",
-          }}
-        >
-          <div
-            style={{
-              width: "25vw",
-              margin: "auto",
-              background: "white",
-              borderRadius: "6px",
-              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-              boxSizing: "border-box",
-              padding: "1rem 1.5rem 2rem",
-            }}
-          >
-            <h1 style={{ fontSize: "1.3rem", padding: ".6rem 0" }}>Cadastro</h1>
+        <div className={style.tela}>
+          <div className={style.container}>
+            <h1 className={style.titulo}>Cadastro</h1>
             <form onSubmit={handleSubmit}>
-              <label
-                htmlFor="nome"
-                style={{ display: "block", marginBottom: ".5rem" }}
-              >
+              <label htmlFor="nome" className={style.label}>
                 Nome completo
               </label>
               <input
@@ -92,20 +86,9 @@ export default function Register() {
                 placeholder="Nome completo"
                 value={nome}
                 onChange={(e) => setNome(() => e.target.value)}
-                style={{
-                  width: "100%",
-                  borderRadius: "5px",
-                  padding: ".6rem",
-                  border: "1px solid gray",
-                  marginBottom: ".8rem",
-                  boxSizing: "border-box",
-                  outline: "none",
-                }}
+                className={style.input}
               />
-              <label
-                htmlFor="email"
-                style={{ display: "block", marginBottom: ".5rem" }}
-              >
+              <label htmlFor="email" className={style.label}>
                 E-mail
               </label>
               <input
@@ -114,20 +97,9 @@ export default function Register() {
                 placeholder="Melhor endereço de E-mail"
                 value={email}
                 onChange={(e) => setEmail(() => e.target.value)}
-                style={{
-                  width: "100%",
-                  borderRadius: "5px",
-                  padding: ".6rem",
-                  border: "1px solid gray",
-                  marginBottom: ".8rem",
-                  boxSizing: "border-box",
-                  outline: "none",
-                }}
+                className={style.input}
               />
-              <label
-                htmlFor="senha"
-                style={{ display: "block", marginBottom: ".5rem" }}
-              >
+              <label htmlFor="senha" className={style.label}>
                 Senha
               </label>
               <input
@@ -136,20 +108,9 @@ export default function Register() {
                 placeholder="Senha segura"
                 value={senha}
                 onChange={(e) => setSenha(() => e.target.value)}
-                style={{
-                  width: "100%",
-                  borderRadius: "5px",
-                  padding: ".6rem",
-                  border: "1px solid gray",
-                  marginBottom: ".8rem",
-                  boxSizing: "border-box",
-                  outline: "none",
-                }}
+                className={style.input}
               />
-              <label
-                htmlFor="confirmacaoSenha"
-                style={{ display: "block", marginBottom: ".5rem" }}
-              >
+              <label htmlFor="confirmacaoSenha" className={style.label}>
                 Confirmação de senha
               </label>
               <input
@@ -158,36 +119,17 @@ export default function Register() {
                 placeholder="Confirmação da senha"
                 value={senhaConfirmacao}
                 onChange={(e) => setSenhaConfirmacao(() => e.target.value)}
-                style={{
-                  width: "100%",
-                  borderRadius: "5px",
-                  padding: ".6rem",
-                  border: "1px solid gray",
-                  marginBottom: ".8rem",
-                  boxSizing: "border-box",
-                  outline: "none",
-                }}
+                className={style.input}
               />
-              <button
-                type="submit"
-                style={{
-                  width: "100%",
-                  padding: ".6rem",
-                  border: "none",
-                  borderRadius: "5px",
-                  backgroundColor: "#86a5c3",
-                  cursor: "pointer",
-                  margin: ".6rem 0 1rem",
-                }}
-              >
+              <button type="submit" className={style.botao}>
                 Cadastrar
               </button>
-              <a
-                href="http://localhost:5173/login"
-                style={{ fontSize: ".9rem", textDecoration: "none" }}
-              >
-                Já possuo um cadastro!
-              </a>
+              <div className={style.linkContainer}>
+                <span>Já possui uma conta? </span>
+                <a href="http://localhost:5173/login" className={style.link}>
+                  Entre!
+                </a>
+              </div>
             </form>
           </div>
         </div>

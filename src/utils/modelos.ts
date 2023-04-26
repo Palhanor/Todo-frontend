@@ -20,5 +20,5 @@ export const userDefault: Usuario = {
 export const categoriaDefault: Categoria = {
     id_categoria: 0,
     nome_categoria: "",
-    cor: "86a5c3",
+    cor: "#86a5c3",
 };

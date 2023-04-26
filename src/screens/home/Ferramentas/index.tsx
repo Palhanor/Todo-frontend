@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { BiLogOut, BiUserCircle } from "react-icons/bi";
 import { FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -12,23 +12,32 @@ export default function Ferramentas() {
     navigate("/login");
   };
 
+  const style = {
+    icone: "cursor-pointer relative",
+    container:
+      "bg-[#c2d2e1] w-48 absolute top-2 -left-48 rounded-lg flex flex-col shadow",
+    primeiraOpcao:
+      "cursor-pointer py-4 px-5 bg-[#c2d2e1] border-none flex items-center rounded-t-md text-left hover:bg-[#b8c8d7]",
+    ultimaOpcao:
+      "cursor-pointer py-4 px-5 bg-[#c2d2e1] border-none flex items-center rounded-b-md text-left hover:bg-[#b8c8d7]",
+    ilustracao: "ml-2",
+  };
+
   return (
-    <span className="cursor-pointer relative">
+    <span className={style.icone}>
       <FiSettings size={18} onClick={() => setFerramentas((prev) => !prev)} />
       {ferramentas && (
-        <div className="bg-[#c2d2e1] w-48 absolute top-2 -left-48 rounded-lg flex flex-col shadow">
+        <div className={style.container}>
           <div
             onClick={() => navigate("/user")}
-            className="cursor-pointer py-4 px-5 bg-[#c2d2e1] border-none flex items-center rounded-t-md text-left hover:bg-[#b8c8d7]"
+            className={style.primeiraOpcao}
           >
             <BiUserCircle size={18} />
-            <span className="ml-2">Configurações</span>
+            <span className={style.ilustracao}>Configurações</span>
           </div>
-          <div
-            onClick={deslogarUsuario}
-            className="cursor-pointer py-4 px-5 bg-[#c2d2e1] border-none flex items-center rounded-b-md text-left hover:bg-[#b8c8d7]"
-          >
-            <BiLogOut size={18} /> <span className="ml-2">Sair</span>
+          <div onClick={deslogarUsuario} className={style.ultimaOpcao}>
+            <BiLogOut size={18} />{" "}
+            <span className={style.ilustracao}>Sair</span>
           </div>
         </div>
       )}

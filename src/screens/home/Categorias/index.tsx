@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react";
-
 import Categoria from "../../../interfaces/categoria";
 import { CategoriasProps } from "../../../interfaces/props";
-
 import { categoriaDefault } from "../../../utils/modelos";
-
+import { AiFillEdit } from "react-icons/ai";
+import { GrFormClose } from "react-icons/gr";
 import {
   BiPlusCircle,
   BiMinusCircle,
   BiCheckboxMinus,
   BiCheckboxChecked,
 } from "react-icons/bi";
-import { AiFillEdit } from "react-icons/ai";
-
 import "./style.css";
 
 export default function Categorias({
@@ -32,7 +29,7 @@ export default function Categorias({
   useEffect(() => {
     if (edicaoCategoria) {
       setNomeCategoria(() => edicaoCategoria.nome_categoria);
-      setCorCategoria(() => `#${edicaoCategoria.cor}`);
+      setCorCategoria(() => edicaoCategoria.cor);
     } else {
       setNomeCategoria(() => "");
       setCorCategoria(() => "#86a5c3");
@@ -53,7 +50,7 @@ export default function Categorias({
   const inserirCategoria = async () => {
     const dados = {
       nome: nomeCategoria,
-      cor: corCategoria.replace("#", ""),
+      cor: corCategoria,
     };
     const retorno = await requisidor("category", "POST", dados);
 
@@ -61,7 +58,7 @@ export default function Categorias({
       const novaCategoria = {
         id_categoria: retorno.id_categoria,
         nome_categoria: nomeCategoria,
-        cor: corCategoria.replace("#", ""),
+        cor: corCategoria,
       };
       setCategorias((categoriasAnteriores: Categoria[]) => [
         ...categoriasAnteriores,
@@ -104,42 +101,80 @@ export default function Categorias({
           (categoriaAnterior) => categoriaAnterior.id_categoria !== id
         )
       );
-      // Remover de categoriasAtivas?
       setEdicaoCategoria(() => categoriaDefault);
     }
   };
 
+  const ativarTodasCategorias = () => {
+    setCategoriasAtivas(() => [
+      0,
+      ...categorias.map((categoria) => categoria.id_categoria),
+    ]);
+  };
+
+  const desativarTodasCategorias = () => {
+    setCategoriasAtivas(() => []);
+  };
+
+  const campoCriarCategoria = () => {
+    if (edicaoCategoria.id_categoria)
+      setEdicaoCategoria(() => categoriaDefault);
+    setNovaCategoria((prev) => !prev);
+  };
+
+  const controlarEdicaoCategoria = (
+    e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+    categoria: Categoria
+  ) => {
+    e.stopPropagation();
+    if (novaCategoria) setNovaCategoria(() => false);
+    setEdicaoCategoria((anterior) => {
+      return anterior.id_categoria == categoria.id_categoria
+        ? categoriaDefault
+        : categoria;
+    });
+  };
+
+  const style = {
+    container: "flex justify-between items-center mb-2",
+    tituloSecao: "text-md mt-4 mb-3 font-normal",
+    ferramentas: "flex",
+    ferramentaCategoria:
+      "p-1 rounded-sm bg-transparent border-none cursor-pointer flex items-center mr-1",
+    edicaoCriacaoContainer: "mb-3",
+    nomeCorContainer: "flex gap-2.5 items-center mb-2",
+    inputNome:
+      "grow outline-none p-2 rounded-md border-solid border border-gray-300",
+    botaoContainer: "flex gap-2.5",
+    botao: (cor: string) =>
+      `border-none rounded-md w-full bg-[${cor}] p-3 cursor-pointer`,
+    listaCategorias: "list-none",
+    bordaCategoria:
+      "p-0.5 pl-2 w-full box-border text-base cursor-pointer mb-3 rounded-md capitalize",
+    categoria: "flex justify-between items-center p-2 rounded-md",
+    tituloCategoria: "text-small font-medium",
+  };
+
   return (
     <>
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-md mt-4 mb-3 font-normal">Categorias</h2>
-        <div className="flex">
+      <div className={style.container}>
+        <h2 className={style.tituloSecao}>Categorias</h2>
+        <div className={style.ferramentas}>
           <button
-            className="p-1 rounded-sm bg-transparent border-none cursor-pointer flex items-center mr-1"
-            onClick={() => {
-              setCategoriasAtivas(() => [
-                0,
-                ...categorias.map((categoria) => categoria.id_categoria),
-              ]);
-            }}
+            className={style.ferramentaCategoria}
+            onClick={ativarTodasCategorias}
           >
             <BiCheckboxChecked size={24} />
           </button>
           <button
-            className="p-1 rounded-sm bg-transparent border-none cursor-pointer flex items-center mr-1"
-            onClick={() => {
-              setCategoriasAtivas(() => []);
-            }}
+            className={style.ferramentaCategoria}
+            onClick={desativarTodasCategorias}
           >
             <BiCheckboxMinus size={24} />
           </button>
           <span
-            onClick={() => {
-              if (edicaoCategoria.id_categoria)
-                setEdicaoCategoria(() => categoriaDefault);
-              setNovaCategoria((prev) => !prev);
-            }}
-            className="p-1 rounded-sm bg-transparent border-none cursor-pointer flex items-center"
+            onClick={campoCriarCategoria}
+            className={style.ferramentaCategoria}
           >
             {novaCategoria ? (
               <BiMinusCircle size={19} />
@@ -150,14 +185,14 @@ export default function Categorias({
         </div>
       </div>
       {(novaCategoria || !!edicaoCategoria.id_categoria) && (
-        <div className="mb-3">
-          <div className="flex gap-2.5 items-center mb-2">
+        <div className={style.edicaoCriacaoContainer}>
+          <div className={style.nomeCorContainer}>
             <input
               type="text"
               placeholder="Nome da categoria"
               value={nomeCategoria}
               onChange={(e) => setNomeCategoria(() => e.target.value)}
-              className="grow outline-none p-2 rounded-md border-solid border border-gray-300"
+              className={style.inputNome}
             />
             <input
               type="color"
@@ -166,11 +201,11 @@ export default function Categorias({
               onChange={(e) => setCorCategoria(() => e.target.value)}
             />
           </div>
-          <div className="flex gap-2.5">
+          <div className={style.botaoContainer}>
             {novaCategoria && (
               <button
                 type="submit"
-                className="border-none rounded-md w-full bg-[#419e31] p-3 cursor-pointer"
+                className={style.botao("#419e31")}
                 onClick={inserirCategoria}
               >
                 Adicionar
@@ -180,12 +215,12 @@ export default function Categorias({
               <>
                 <button
                   type="submit"
-                  className="border-none rounded-md w-full bg-[#419e31] p-3 cursor-pointer"
+                  className={style.botao("#419e31")}
                   onClick={() =>
                     editarCategoria({
                       id_categoria: edicaoCategoria.id_categoria,
                       nome_categoria: nomeCategoria,
-                      cor: corCategoria.replace("#", ""),
+                      cor: corCategoria,
                     })
                   }
                 >
@@ -193,7 +228,7 @@ export default function Categorias({
                 </button>
                 <button
                   type="submit"
-                  className="border-none rounded-md w-full bg-[#e23936] p-3 cursor-pointer"
+                  className={style.botao("#e23936")}
                   onClick={() => excluirCategoria(edicaoCategoria.id_categoria)}
                 >
                   Apagar
@@ -203,62 +238,54 @@ export default function Categorias({
           </div>
         </div>
       )}
-      <ul className="list-none">
+      <ul className={style.listaCategorias}>
         <li
           key={categoriaDefault.id_categoria}
-          className="p-0.5 pl-2 w-full box-border text-base cursor-pointer mb-3 rounded-md capitalize"
-          style={{
-            backgroundColor: `#${categoriaDefault.cor}`,
-          }}
+          className={style.bordaCategoria}
+          style={{ backgroundColor: categoriaDefault.cor }}
           onClick={() => selecaoCategoria(categoriaDefault.id_categoria)}
         >
           <div
-            className="flex justify-between items-center p-2 rounded-md"
+            className={style.categoria}
             style={{
               backgroundColor: categoriasAtivas.includes(
                 categoriaDefault.id_categoria
               )
-                ? `#${categoriaDefault.cor}`
+                ? categoriaDefault.cor
                 : "#e2e9f0",
             }}
           >
-            <h4 className="text-small font-medium">Sem categoria</h4>
+            <h4 className={style.tituloCategoria}>Sem categoria</h4>
           </div>
         </li>
         {categorias.map((categoria) => (
           <li
             key={categoria.id_categoria}
-            className="p-0.5 pl-2 w-full box-border text-base cursor-pointer mb-3 rounded-md capitalize"
+            className={style.bordaCategoria}
             style={{
-              backgroundColor: `#${categoria.cor}`,
+              backgroundColor: categoria.cor,
             }}
             onClick={() => selecaoCategoria(categoria.id_categoria)}
           >
             <div
-              className="flex justify-between items-center p-2 rounded-md"
+              className={style.categoria}
               style={{
                 backgroundColor: categoriasAtivas.includes(
                   categoria.id_categoria
                 )
-                  ? `#${categoria.cor}`
+                  ? categoria.cor
                   : "#e2e9f0",
               }}
             >
-              <h4 className="text-small font-medium">
+              <h4 className={style.tituloCategoria}>
                 {categoria.nome_categoria}
               </h4>
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (novaCategoria) setNovaCategoria(() => false);
-                  setEdicaoCategoria((anterior) => {
-                    return anterior.id_categoria == categoria.id_categoria
-                      ? categoriaDefault
-                      : categoria;
-                  });
-                }}
-              >
-                <AiFillEdit />
+              <span onClick={(e) => controlarEdicaoCategoria(e, categoria)}>
+                {edicaoCategoria.id_categoria != categoria.id_categoria ? (
+                  <AiFillEdit />
+                ) : (
+                  <GrFormClose size={24} />
+                )}
               </span>
             </div>
           </li>

@@ -49,35 +49,29 @@ export default function Login() {
       });
   };
 
+  const style = {
+    tela: "bg-[#f7f9fa] h-screen pt-44 box-border",
+    container: "w-1/3 m-auto bg-white rounded-xl shadow-lg box-border p-7 pt-6",
+    titulo: "text-2xl font-semibold mt-2 mb-5 text-center",
+    label: "block mb-3",
+    input:
+      "w-full rounded-md p-3 border border-solid border-gray-400 mb-3 box-border outline-none",
+    botao:
+      "w-full p-4 border-none rounded-md bg-[#86a5c3] cursor-pointer mt-6 mb-8 hover:bg-[#7999b8]",
+    linkContainer:
+      "text-center w-5/6 m-auto text-small border-t border-solid border-gray-300 pt-6",
+    link: "text-small text-gray-400",
+  };
+
   return (
     <>
       {autenticado && (
-        <div
-          style={{
-            backgroundColor: "#f7f9fa",
-            height: "100vh",
-            paddingTop: "20vh",
-            boxSizing: "border-box",
-          }}
-        >
-          <div
-            style={{
-              width: "25vw",
-              margin: "auto",
-              background: "white",
-              borderRadius: "6px",
-              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-              boxSizing: "border-box",
-              padding: "1rem 1.5rem 2rem",
-            }}
-          >
-            <h1 style={{ fontSize: "1.3rem", padding: ".6rem 0" }}>Entrar</h1>
+        <div className={style.tela}>
+          <div className={style.container}>
+            <h1 className={style.titulo}>Entrar</h1>
             <form onSubmit={handleSubmit}>
-              <label
-                htmlFor="email"
-                style={{ display: "block", marginBottom: ".5rem" }}
-              >
-                Endereço de E-mail
+              <label htmlFor="email" className={style.label}>
+                E-mail
               </label>
               <input
                 id="email"
@@ -85,21 +79,10 @@ export default function Login() {
                 placeholder="E-mail cadastrado"
                 value={email}
                 onChange={(e) => setEmail(() => e.target.value)}
-                style={{
-                  width: "100%",
-                  borderRadius: "5px",
-                  padding: ".6rem",
-                  border: "1px solid gray",
-                  marginBottom: ".8rem",
-                  boxSizing: "border-box",
-                  outline: "none",
-                }}
+                className={style.input}
               />
-              <label
-                htmlFor="senha"
-                style={{ display: "block", marginBottom: ".5rem" }}
-              >
-                Senha do usuário
+              <label htmlFor="senha" className={style.label}>
+                Senha
               </label>
               <input
                 id="senha"
@@ -107,37 +90,17 @@ export default function Login() {
                 placeholder="Senha cadastrada"
                 value={senha}
                 onChange={(e) => setSenha(() => e.target.value)}
-                style={{
-                  width: "100%",
-                  borderRadius: "5px",
-                  padding: ".6rem",
-                  border: "1px solid gray",
-                  marginBottom: ".8rem",
-                  boxSizing: "border-box",
-                  outline: "none",
-                }}
+                className={style.input}
               />
-              <button
-                type="submit"
-                style={{
-                  width: "100%",
-                  padding: ".6rem",
-                  border: "none",
-                  borderRadius: "5px",
-                  backgroundColor: "#86a5c3",
-                  cursor: "pointer",
-                  margin: ".6rem 0 1rem",
-                }}
-              >
+              <button type="submit" className={style.botao}>
                 Entrar
               </button>
-              <a
-                href="http://localhost:5173/register"
-                style={{ fontSize: ".9rem", textDecoration: "none" }}
-              >
-                Não tenho cadastro!
-              </a>
-              {/* <a href="#">Esqueci a senha!</a> */}
+              <div className={style.linkContainer}>
+                <span>Ainda sem uma conta? </span>
+                <a href="./register" className={style.link}>
+                  Cadastre-se!
+                </a>
+              </div>
             </form>
           </div>
         </div>
