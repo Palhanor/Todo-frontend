@@ -1,9 +1,10 @@
-// TODO: Criar um load para quando estiver esperando a autenticacao
 // TODO: Adicionar o sistema para visualizar a senha inserida
 // TODO: Ajeitar a tela de configuracoes de usuario (dados, senha, apagar...)
-// TODO: Bug quando apaga uma categoria a tarefa continua com a cor dela - criar componente Tarefa com um estado de cor
 
 // TODO: Trabalhar nas paginas que faltam: erro e landingPage
+
+// TODO: As atividades feitas devem ir para o final do dia
+// TODO: Bug quando apaga uma categoria a tarefa continua com a cor dela - criar componente Tarefa com um estado de cor
 
 // TODO: Fazer os ajustes de responsividade no sistema
 
@@ -11,7 +12,6 @@
 // TODO: Receber os erros do backend e exibir de uma forma melhorada
 
 // TODO: Adicionar o sistema de tarefas excluidas
-
 // TODO: Criar sistema de tarefas perdidas
 /*
 Atuais
@@ -20,10 +20,12 @@ Atrsadas
 Realiadas
 Perdidas
 Historico (realizadas e perdidas)
+
 Excluidas
 
 Remarcar - quando muda a data de uma tarefa que já está atrasada ela fica como perida no dia que devia ser feita e vai para o dia que foi remarcada
 Check - Quando marca uma atrasada ela vai pra o dia que foi marcada e fica como perdida no dia que devia ter sido feita
+E se uma atividade dada como perdida for reagendada? deve bloquear reagendamento? deve remover de perdida caso seja par ao futuro?
 */
 
 import { useEffect, useState } from "react";
@@ -41,6 +43,7 @@ import Categoria from "../../interfaces/categoria";
 import "./style.css";
 import { filtrarTarefasCategoriasAbas } from "../../utils/tarefas";
 import { GrFormClose } from "react-icons/gr";
+import Loading from "../Loading";
 
 export default function Home() {
   const [user, setUser] = useState<Usuario>(userDefault);
@@ -248,7 +251,7 @@ export default function Home() {
 
   return (
     <>
-      {!!user.id_usuario && (
+      {!!user.id_usuario ? (
         <div className={style.tela}>
           <aside
             style={{ width: colFerramentas }}
@@ -268,32 +271,6 @@ export default function Home() {
                 <Ferramentas />
               </div>
               <p className={style.email}>{user.email}</p>
-              <div>
-                <h2 className={style.tituloSecao}>Filtros</h2>
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Filtro textual"
-                    value={filtroTexto}
-                    onChange={(e) => setFiltroTexto(() => e.target.value)}
-                    className="w-full p-3 mb-3 rounded-md bg-white border border-solid border-gray-400 outline-none"
-                  />
-                </div>
-                <div className="flex">
-                  <input
-                    type="date"
-                    className="rounded-l-md grow p-3 outline-none"
-                    value={filtroData}
-                    onChange={(e) => setFiltroData(() => e.target.value)}
-                  />
-                  <span
-                    onClick={() => setFiltroData(() => "")}
-                    className="w-10 cursor-pointer text-center bg-white rounded-r-md flex items-center justify-center"
-                  >
-                    <GrFormClose size={25} />
-                  </span>
-                </div>
-              </div>
               <div>
                 <h2 className={style.tituloSecao}>Visualizações</h2>
                 <ul className={style.listaSecao}>
@@ -316,6 +293,38 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
+                <div>
+                  <h2 className={style.tituloSecao}>Filtros</h2>
+                  <div className="flex mb-3">
+                    <input
+                      type="text"
+                      placeholder="Filtro textual"
+                      value={filtroTexto}
+                      onChange={(e) => setFiltroTexto(() => e.target.value)}
+                      className="rounded-l-md grow p-3 outline-none"
+                    />
+                    <span
+                      onClick={() => setFiltroTexto(() => "")}
+                      className="w-10 cursor-pointer text-center bg-white rounded-r-md flex items-center justify-center"
+                    >
+                      <GrFormClose size={25} />
+                    </span>
+                  </div>
+                  <div className="flex">
+                    <input
+                      type="date"
+                      className="rounded-l-md grow p-3 outline-none"
+                      value={filtroData}
+                      onChange={(e) => setFiltroData(() => e.target.value)}
+                    />
+                    <span
+                      onClick={() => setFiltroData(() => "")}
+                      className="w-10 cursor-pointer text-center bg-white rounded-r-md flex items-center justify-center"
+                    >
+                      <GrFormClose size={25} />
+                    </span>
+                  </div>
+                </div>
                 <Categorias
                   categorias={categorias}
                   categoriasAtivas={categoriasAtivas}
@@ -395,6 +404,8 @@ export default function Home() {
             </>
           )}
         </div>
+      ) : (
+        <Loading />
       )}
     </>
   );

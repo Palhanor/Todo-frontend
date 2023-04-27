@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Usuario from "../../interfaces/usuario";
 import { userDefault } from "../../utils/modelos";
+import Loading from "../Loading";
 
 export default function User() {
   const [usuario, setUsuario] = useState<Usuario>(userDefault);
@@ -99,7 +100,7 @@ export default function User() {
 
   return (
     <>
-      {!!usuario.id_usuario && (
+      {!!usuario.id_usuario ? (
         <div className={style.tela}>
           <div className={style.container}>
             <div className={style.secao}>
@@ -200,6 +201,8 @@ export default function User() {
             </div>
           </div>
         </div>
+      ) : (
+        <Loading />
       )}
     </>
   );

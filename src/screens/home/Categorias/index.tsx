@@ -26,6 +26,8 @@ export default function Categorias({
   const [nomeCategoria, setNomeCategoria] = useState("");
   const [corCategoria, setCorCategoria] = useState("#86a5c3");
 
+  const [mostrarFerramentas, setMostrarFerramentas] = useState<boolean>(false);
+
   useEffect(() => {
     if (edicaoCategoria) {
       setNomeCategoria(() => edicaoCategoria.nome_categoria);
@@ -157,32 +159,38 @@ export default function Categorias({
 
   return (
     <>
-      <div className={style.container}>
+      <div
+        className={style.container}
+        onMouseEnter={() => setMostrarFerramentas(() => true)}
+        onMouseLeave={() => setMostrarFerramentas(() => false)}
+      >
         <h2 className={style.tituloSecao}>Categorias</h2>
-        <div className={style.ferramentas}>
-          <button
-            className={style.ferramentaCategoria}
-            onClick={ativarTodasCategorias}
-          >
-            <BiCheckboxChecked size={24} />
-          </button>
-          <button
-            className={style.ferramentaCategoria}
-            onClick={desativarTodasCategorias}
-          >
-            <BiCheckboxMinus size={24} />
-          </button>
-          <span
-            onClick={campoCriarCategoria}
-            className={style.ferramentaCategoria}
-          >
-            {novaCategoria ? (
-              <BiMinusCircle size={19} />
-            ) : (
-              <BiPlusCircle size={19} />
-            )}
-          </span>
-        </div>
+        {mostrarFerramentas && (
+          <div className={style.ferramentas}>
+            <button
+              className={style.ferramentaCategoria}
+              onClick={ativarTodasCategorias}
+            >
+              <BiCheckboxChecked size={24} />
+            </button>
+            <button
+              className={style.ferramentaCategoria}
+              onClick={desativarTodasCategorias}
+            >
+              <BiCheckboxMinus size={24} />
+            </button>
+            <span
+              onClick={campoCriarCategoria}
+              className={style.ferramentaCategoria}
+            >
+              {novaCategoria ? (
+                <BiMinusCircle size={19} />
+              ) : (
+                <BiPlusCircle size={19} />
+              )}
+            </span>
+          </div>
+        )}
       </div>
       {(novaCategoria || !!edicaoCategoria.id_categoria) && (
         <div className={style.edicaoCriacaoContainer}>
