@@ -22,3 +22,29 @@
   scrollbar-color: #cbd7e3 #e8ecf0;
   scrollbar-width: thin;
 }
+
+
+/* width */
+.barra_lateral::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.barra_lateral::-webkit-scrollbar-track {
+  background: #e2e9f0;
+}
+
+/* Handle */
+.barra_lateral::-webkit-scrollbar-thumb {
+  background: #cbd7e3;
+}
+
+/* Handle on hover */
+.barra_lateral::-webkit-scrollbar-thumb:hover {
+  background: #b3c5d6;
+}
+
+.barra_lateral {
+  scrollbar-color: #cbd7e3 #e2e9f0;
+  scrollbar-width: thin;
+}

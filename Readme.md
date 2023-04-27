@@ -19,7 +19,7 @@
 - Adicinar outras opcoes de login (Google)
 - Fazer CRUD de tarefas usando Models com Sequelize, ORM ou Prisma
 - Adicionar o Redux para fazer o tratamento de estados de forma global e centralizada
-- Filtro por range de dias (comeco-fim)
+- Filtro por intervalo de dias - precisa de uma nova interface de selecão
 - Criar sistemas de ordenamento de tarefas (titulo, data - mais antiga ou mais nova)
 - Implementar lazy load nas tarefas que estão mais para o futuro
 - Otimizar o sistema de atualização automática na edição das notas

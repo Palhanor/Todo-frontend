@@ -8,6 +8,7 @@ import {
   pegarDataAtual,
 } from "../../../utils/datas";
 import { tarefaDefault } from "../../../utils/modelos";
+import { useState } from "react";
 
 export default function Tarefas({
   tarefas,
@@ -15,9 +16,12 @@ export default function Tarefas({
   abaTarefas,
   categoriasAtivas,
   tarefaSelecionada,
+  filtroTexto,
+  filtroData,
   editarTarefa,
   setTarefaSelecionada,
 }: TarefasProps) {
+
   const style = {
     lista: "list-none p-0 m-0",
     toggle: "cursor-pointer",
@@ -33,7 +37,13 @@ export default function Tarefas({
 
   return (
     <ul className={style.lista}>
-      {filtrarTarefas(tarefas, abaTarefas, categoriasAtivas).map((val: any) => (
+      {filtrarTarefas(
+        tarefas,
+        abaTarefas,
+        categoriasAtivas,
+        filtroTexto,
+        filtroData
+      ).map((val: any) => (
         <li key={val[0]}>
           <details open={true} className={style.toggle}>
             <summary className={style.tituloData}>

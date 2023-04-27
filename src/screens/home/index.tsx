@@ -1,17 +1,30 @@
-// TODO: Criar um load para quando estiver esperando autenticacao
+// TODO: Criar um load para quando estiver esperando a autenticacao
 // TODO: Adicionar o sistema para visualizar a senha inserida
-
-// TODO: Implementar um filtro de busca por termos - acima de visualizações
-// TODO: Implementar um filtro por prazos (dia especifico) - acima de visualizações
-// TODO: Implementar um limpador do filtro de prazos (dia especifico) - acima de visualizações
-
 // TODO: Ajeitar a tela de configuracoes de usuario (dados, senha, apagar...)
+// TODO: Bug quando apaga uma categoria a tarefa continua com a cor dela - criar componente Tarefa com um estado de cor
+
 // TODO: Trabalhar nas paginas que faltam: erro e landingPage
 
 // TODO: Fazer os ajustes de responsividade no sistema
 
 // TODO: Fazer o tratamento dos erros no front-end antes de enviar os dados
 // TODO: Receber os erros do backend e exibir de uma forma melhorada
+
+// TODO: Adicionar o sistema de tarefas excluidas
+
+// TODO: Criar sistema de tarefas perdidas
+/*
+Atuais
+Atrsadas
+
+Realiadas
+Perdidas
+Historico (realizadas e perdidas)
+Excluidas
+
+Remarcar - quando muda a data de uma tarefa que já está atrasada ela fica como perida no dia que devia ser feita e vai para o dia que foi remarcada
+Check - Quando marca uma atrasada ela vai pra o dia que foi marcada e fica como perdida no dia que devia ter sido feita
+*/
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +40,7 @@ import { abas, edicaoTarefa } from "../../interfaces/types";
 import Categoria from "../../interfaces/categoria";
 import "./style.css";
 import { filtrarTarefasCategoriasAbas } from "../../utils/tarefas";
+import { GrFormClose } from "react-icons/gr";
 
 export default function Home() {
   const [user, setUser] = useState<Usuario>(userDefault);
@@ -47,6 +61,9 @@ export default function Home() {
   const [colEdicao, setColEdicao] = useState<number>(window.innerWidth / 4);
   const [redimensionandoEdicao, setRedimensionandoEdicao] =
     useState<boolean>(false);
+
+  const [filtroTexto, setFiltroTexto] = useState<string>("");
+  const [filtroData, setFiltroData] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -202,11 +219,12 @@ export default function Home() {
 
   const style = {
     tela: "flex",
-    barraEsquerda: "p-5 pr-4 h-screen box-border justify-between bg-[#e2e9f0]",
+    barraEsquerda:
+      "barra_lateral overflow-y-scroll p-5 pr-4 h-screen box-border justify-between bg-[#e2e9f0]",
     usuario: "flex justify-between items-center",
     nomeUsuario: "text-lg my-2 font-semibold",
     email: "block text-md text-slate-700 mb-4",
-    tituloSecao: "text-md mt-4 mb-3 font-normal",
+    tituloSecao: "text-lg mt-4 mb-3 font-medium",
     listaSecao: "list-none",
     visualizacao:
       "flex justify-between px-3 py-2 w-full box-border text-normal cursor-pointer mb-2 rounded-md capitalize",
@@ -221,7 +239,9 @@ export default function Home() {
     const listaTarefasFiltradas = filtrarTarefasCategoriasAbas(
       tarefas,
       nome,
-      categoriasAtivas
+      categoriasAtivas,
+      filtroTexto,
+      filtroData
     );
     return listaTarefasFiltradas.length;
   };
@@ -248,6 +268,32 @@ export default function Home() {
                 <Ferramentas />
               </div>
               <p className={style.email}>{user.email}</p>
+              <div>
+                <h2 className={style.tituloSecao}>Filtros</h2>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Filtro textual"
+                    value={filtroTexto}
+                    onChange={(e) => setFiltroTexto(() => e.target.value)}
+                    className="w-full p-3 mb-3 rounded-md bg-white border border-solid border-gray-400 outline-none"
+                  />
+                </div>
+                <div className="flex">
+                  <input
+                    type="date"
+                    className="rounded-l-md grow p-3 outline-none"
+                    value={filtroData}
+                    onChange={(e) => setFiltroData(() => e.target.value)}
+                  />
+                  <span
+                    onClick={() => setFiltroData(() => "")}
+                    className="w-10 cursor-pointer text-center bg-white rounded-r-md flex items-center justify-center"
+                  >
+                    <GrFormClose size={25} />
+                  </span>
+                </div>
+              </div>
               <div>
                 <h2 className={style.tituloSecao}>Visualizações</h2>
                 <ul className={style.listaSecao}>
@@ -281,7 +327,7 @@ export default function Home() {
             </div>
           </aside>
           <div
-            className={style.redimensionador("#e2e9f0")}
+            className={style.redimensionador("#f7f9fa")}
             onMouseDown={() => {
               setRedimensionandoFerramentas(() => true);
             }}
@@ -316,6 +362,8 @@ export default function Home() {
                 abaTarefas={abaTarefas}
                 categoriasAtivas={categoriasAtivas}
                 tarefaSelecionada={tarefaSelecionada}
+                filtroTexto={filtroTexto}
+                filtroData={filtroData}
                 editarTarefa={editarTarefa}
                 setTarefaSelecionada={setTarefaSelecionada}
               />
