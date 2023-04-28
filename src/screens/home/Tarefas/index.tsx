@@ -8,7 +8,6 @@ import {
   pegarDataAtual,
 } from "../../../utils/datas";
 import { tarefaDefault } from "../../../utils/modelos";
-import { useState } from "react";
 
 export default function Tarefas({
   tarefas,
@@ -21,6 +20,11 @@ export default function Tarefas({
   editarTarefa,
   setTarefaSelecionada,
 }: TarefasProps) {
+  const tarefasRealizadasNoFinal = (listaTarefas: Tarefa[]) => {
+    return listaTarefas.sort((a: Tarefa, b: Tarefa) =>
+      a.realizada > b.realizada ? 1 : -1
+    );
+  };
 
   const style = {
     lista: "list-none p-0 m-0",
@@ -50,7 +54,7 @@ export default function Tarefas({
               {formatarDataPrincipal(val[0])} &#8226; {val[1].length}
             </summary>
             <ul>
-              {val[1].map((tarefa: Tarefa) => (
+              {tarefasRealizadasNoFinal(val[1]).map((tarefa: Tarefa) => (
                 <li
                   key={tarefa.id_tarefa}
                   className={style.tarefa}

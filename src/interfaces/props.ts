@@ -23,6 +23,7 @@ export interface CategoriasProps {
     setCategoriasAtivas: React.Dispatch<React.SetStateAction<number[]>>;
     requisidor: (rota: string, metodo?: string, dados?: any) => Promise<any>;
     setCategorias: React.Dispatch<React.SetStateAction<Categoria[]>>;
+    setTarefas: React.Dispatch<React.SetStateAction<Tarefa[]>>;
 }
 
 export interface TarefasProps {

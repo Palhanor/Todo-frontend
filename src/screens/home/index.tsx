@@ -1,10 +1,5 @@
-// TODO: Desenvolver a pagina de erro
-// TODO: As atividades feitas devem ir para o final do dia
-// TODO: Bug quando apaga uma categoria a tarefa continua com a cor dela - criar componente Tarefa com um estado de cor
-// TODO: Bug do ordenamento do historio de tarefas
-
-// TODO: Adicionar o sistema de tarefas excluidas
 // TODO: Criar sistema de tarefas perdidas
+// TODO: Adicionar o sistema de tarefas excluidas
 
 // TODO: Fazer os ajustes de responsividade no sistema
 
@@ -12,6 +7,7 @@
 // TODO: Receber os erros do backend e exibir de uma forma melhorada
 
 // TODO: Desenvolver a pagina de landingPage
+// TODO: Criar sistema de ajuste das visualizações dentro das configurações de usuário
 
 /*
 Atuais
@@ -26,6 +22,7 @@ Excluidas
 Remarcar - quando muda a data de uma tarefa que já está atrasada ela fica como perida no dia que devia ser feita e vai para o dia que foi remarcada
 Check - Quando marca uma atrasada ela vai pra o dia que foi marcada e fica como perdida no dia que devia ter sido feita
 E se uma atividade dada como perdida for reagendada? deve bloquear reagendamento? deve remover de perdida caso seja par ao futuro?
+Alem de um campo de perdido, deve ter um campo de tentativas (que eh incrementado a cada nova falha)
 */
 
 import { useEffect, useState } from "react";
@@ -331,6 +328,7 @@ export default function Home() {
                   setCategoriasAtivas={setCategoriasAtivas}
                   requisidor={requisidor}
                   setCategorias={setCategorias}
+                  setTarefas={setTarefas}
                 />
               </div>
             </div>

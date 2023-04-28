@@ -22,9 +22,11 @@ const agruparTarefas = (listaTarefas: Tarefa[]) => {
 
 const ordenarTarefas = (tarefasFiltradas: Tarefa[], abaAtiva: abas) => {
     return tarefasFiltradas.sort((a: Tarefa, b: Tarefa) => {
-        if (abaAtiva == "atuais") {
-            return +(a.data_final > b.data_final);
-        } else return +(a.data_final < b.data_final);
+        if (abaAtiva == "atuais" || abaAtiva == "atrasadas") {
+            return (a.data_final > b.data_final) ? 1 : -1;
+        } else {
+            return (a.data_final < b.data_final) ? 1 : -1;
+        };
     });
 };
 

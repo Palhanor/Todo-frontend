@@ -18,6 +18,7 @@ export default function Categorias({
   setCategoriasAtivas,
   requisidor,
   setCategorias,
+  setTarefas,
 }: CategoriasProps) {
   const [novaCategoria, setNovaCategoria] = useState(false);
   const [edicaoCategoria, setEdicaoCategoria] =
@@ -104,6 +105,13 @@ export default function Categorias({
         )
       );
       setEdicaoCategoria(() => categoriaDefault);
+      setTarefas((tarefasAnteriores) => {
+        const teste = tarefasAnteriores.map((tarefa) =>
+          tarefa.categoria == id ? { ...tarefa, categoria: null } : tarefa
+        );
+        console.log(teste);
+        return teste;
+      });
     }
   };
 
