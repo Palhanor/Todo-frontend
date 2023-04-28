@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [autenticado, setAutenticado] = useState(false);
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+
+  const [visualizarSenha, setVisualizarSenha] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,6 +60,10 @@ export default function Login() {
     label: "block mb-3",
     input:
       "w-full rounded-md p-3 border border-solid border-gray-400 mb-3 box-border outline-none",
+    inputSenha:
+      "rounded-l-md p-3 grow border border-solid border-gray-400 border-r-0 outline-none",
+    visualiadorSenha:
+      "rounded-r-md p-3 flex items-center cursor-pointer border border-solid border-gray-400 border-l-0",
     botao:
       "w-full p-4 border-none rounded-md bg-[#86a5c3] cursor-pointer mt-6 mb-8 hover:bg-[#7999b8]",
     linkContainer:
@@ -84,14 +92,26 @@ export default function Login() {
               <label htmlFor="senha" className={style.label}>
                 Senha
               </label>
-              <input
-                id="senha"
-                type="password"
-                placeholder="Senha cadastrada"
-                value={senha}
-                onChange={(e) => setSenha(() => e.target.value)}
-                className={style.input}
-              />
+              <div className="flex">
+                <input
+                  id="senha"
+                  type={!visualizarSenha ? "password" : "text"}
+                  placeholder="Senha cadastrada"
+                  value={senha}
+                  onChange={(e) => setSenha(() => e.target.value)}
+                  className={style.inputSenha}
+                />
+                <span
+                  onClick={() => setVisualizarSenha((prev) => !prev)}
+                  className={style.visualiadorSenha}
+                >
+                  {!visualizarSenha ? (
+                    <AiFillEye size={20} color="#666" />
+                  ) : (
+                    <AiFillEyeInvisible size={20} color="#666" />
+                  )}
+                </span>
+              </div>
               <button type="submit" className={style.botao}>
                 Entrar
               </button>

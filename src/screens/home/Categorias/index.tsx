@@ -139,8 +139,8 @@ export default function Categorias({
 
   const style = {
     container: "flex justify-between items-center mb-2",
-    tituloSecao: "text-lg mt-4 mb-3 font-medium",
-    ferramentas: "flex",
+    tituloSecao: "text-lg mt-7 mb-3 font-medium",
+    ferramentas: "flex mt-3",
     ferramentaCategoria:
       "p-1 rounded-sm bg-transparent border-none cursor-pointer flex items-center mr-1",
     edicaoCriacaoContainer: "mb-3",

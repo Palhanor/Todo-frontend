@@ -1,18 +1,18 @@
-// TODO: Adicionar o sistema para visualizar a senha inserida
-// TODO: Ajeitar a tela de configuracoes de usuario (dados, senha, apagar...)
-
-// TODO: Trabalhar nas paginas que faltam: erro e landingPage
-
+// TODO: Desenvolver a pagina de erro
 // TODO: As atividades feitas devem ir para o final do dia
 // TODO: Bug quando apaga uma categoria a tarefa continua com a cor dela - criar componente Tarefa com um estado de cor
+// TODO: Bug do ordenamento do historio de tarefas
+
+// TODO: Adicionar o sistema de tarefas excluidas
+// TODO: Criar sistema de tarefas perdidas
 
 // TODO: Fazer os ajustes de responsividade no sistema
 
 // TODO: Fazer o tratamento dos erros no front-end antes de enviar os dados
 // TODO: Receber os erros do backend e exibir de uma forma melhorada
 
-// TODO: Adicionar o sistema de tarefas excluidas
-// TODO: Criar sistema de tarefas perdidas
+// TODO: Desenvolver a pagina de landingPage
+
 /*
 Atuais
 Atrsadas
@@ -97,7 +97,7 @@ export default function Home() {
       const tamanho = screenWidth - e.clientX;
       let novaLargura: number;
       if (tamanho <= screenWidth / 5) novaLargura = screenWidth / 5;
-      else if (tamanho >= screenWidth / 3) novaLargura = screenWidth / 3;
+      else if (tamanho >= screenWidth / 2.5) novaLargura = screenWidth / 2.5;
       else novaLargura = tamanho;
       setColEdicao(() => novaLargura);
     }
@@ -220,24 +220,6 @@ export default function Home() {
     }
   };
 
-  const style = {
-    tela: "flex",
-    barraEsquerda:
-      "barra_lateral overflow-y-scroll p-5 pr-4 h-screen box-border justify-between bg-[#e2e9f0]",
-    usuario: "flex justify-between items-center",
-    nomeUsuario: "text-lg my-2 font-semibold",
-    email: "block text-md text-slate-700 mb-4",
-    tituloSecao: "text-lg mt-4 mb-3 font-medium",
-    listaSecao: "list-none",
-    visualizacao:
-      "flex justify-between px-3 py-2 w-full box-border text-normal cursor-pointer mb-2 rounded-md capitalize",
-    central:
-      "campo_tarefas grow px-5 pb-5 h-screen overflow-y-scroll box-border bg-[#f7f9fa]",
-    titulo: "text-lg mt-5 mb-4 font-semibold",
-    redimensionador: (cor: string) =>
-      `bg-[${cor}] w-1 h-screen cursor-col-resize`,
-  };
-
   const pegarNumeroTarefasVisualizacao = (nome: abas) => {
     const listaTarefasFiltradas = filtrarTarefasCategoriasAbas(
       tarefas,
@@ -247,6 +229,24 @@ export default function Home() {
       filtroData
     );
     return listaTarefasFiltradas.length;
+  };
+
+  const style = {
+    tela: "flex",
+    barraEsquerda:
+      "barra_lateral overflow-y-scroll p-5 pr-4 h-screen box-border justify-between bg-[#e2e9f0]",
+    usuario: "flex justify-between items-center",
+    nomeUsuario: "text-lg my-2 font-semibold",
+    email: "block text-md text-slate-700 mb-4",
+    tituloSecao: "text-lg mt-6 mb-3 font-medium",
+    listaSecao: "list-none",
+    visualizacao:
+      "flex justify-between px-3 py-2 w-full box-border text-normal cursor-pointer mb-2 rounded-md capitalize",
+    central:
+      "campo_tarefas grow px-5 pb-5 h-screen overflow-y-scroll box-border bg-[#f7f9fa]",
+    titulo: "text-lg mt-5 mb-4 font-semibold",
+    redimensionador: (cor: string) =>
+      `bg-[${cor}] w-1 h-screen cursor-col-resize`,
   };
 
   return (
@@ -301,7 +301,7 @@ export default function Home() {
                       placeholder="Filtro textual"
                       value={filtroTexto}
                       onChange={(e) => setFiltroTexto(() => e.target.value)}
-                      className="rounded-l-md grow p-3 outline-none"
+                      className="rounded-l-md w-full p-3 outline-none"
                     />
                     <span
                       onClick={() => setFiltroTexto(() => "")}
@@ -313,7 +313,7 @@ export default function Home() {
                   <div className="flex">
                     <input
                       type="date"
-                      className="rounded-l-md grow p-3 outline-none"
+                      className="rounded-l-md w-full p-3 outline-none"
                       value={filtroData}
                       onChange={(e) => setFiltroData(() => e.target.value)}
                     />

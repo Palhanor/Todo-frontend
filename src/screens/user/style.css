@@ -1,0 +1,24 @@
+/* width */
+.configuracoes_usuairo::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+  .configuracoes_usuairo::-webkit-scrollbar-track {
+    background: #e8ecf0;
+  }
+  
+  /* Handle */
+  .configuracoes_usuairo::-webkit-scrollbar-thumb {
+    background: #cbd7e3;
+  }
+  
+  /* Handle on hover */
+  .configuracoes_usuairo::-webkit-scrollbar-thumb:hover {
+    background: #b3c5d6;
+  }
+  
+  .configuracoes_usuairo {
+    scrollbar-color: #cbd7e3 #e8ecf0;
+    scrollbar-width: thin;
+  }
