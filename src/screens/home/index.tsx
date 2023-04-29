@@ -1,3 +1,10 @@
+// TODO: Desenvolver a pagina de landingPage
+// TODO: Criar sistema de ajuste das visualizações dentro das configurações de usuário (hoje, futuras, atrasadas, historico [perdidas e realizadas], excluídas)
+// TODO: Salvar dados no local storage (visualizacoes, largura das barras laterais, details abertos...)
+// TODO: Implementar o Redux para a gestão dos estados
+
+// TODO: Adicionar o campo de categorias na area de tarefas sendo criadas
+// TODO: Adicionar o sistema de prioridade das tarefas
 // TODO: Criar sistema de tarefas perdidas
 // TODO: Adicionar o sistema de tarefas excluidas
 
@@ -6,24 +13,12 @@
 // TODO: Fazer o tratamento dos erros no front-end antes de enviar os dados
 // TODO: Receber os erros do backend e exibir de uma forma melhorada
 
-// TODO: Desenvolver a pagina de landingPage
-// TODO: Criar sistema de ajuste das visualizações dentro das configurações de usuário
+// TODO: Tirar o JWT do localStorage para os cookies (evitar XSS)
 
-/*
-Atuais
-Atrsadas
+// TODO: Refatorar os códigos de toda aplicação
 
-Realiadas
-Perdidas
-Historico (realizadas e perdidas)
+// TODO: Modificar o sistema de criação e edição de categorias (parecer com o ChatGPT)
 
-Excluidas
-
-Remarcar - quando muda a data de uma tarefa que já está atrasada ela fica como perida no dia que devia ser feita e vai para o dia que foi remarcada
-Check - Quando marca uma atrasada ela vai pra o dia que foi marcada e fica como perdida no dia que devia ter sido feita
-E se uma atividade dada como perdida for reagendada? deve bloquear reagendamento? deve remover de perdida caso seja par ao futuro?
-Alem de um campo de perdido, deve ter um campo de tentativas (que eh incrementado a cada nova falha)
-*/
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -43,63 +38,123 @@ import { GrFormClose } from "react-icons/gr";
 import Loading from "../Loading";
 
 export default function Home() {
+  const navigate = useNavigate();
+
+  // Pegos do banco de dados
   const [user, setUser] = useState<Usuario>(userDefault);
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const listaAbasVisualizacao: abas[] = ["atuais", "atrasadas", "realizadas"];
 
+  // Valores selecionados
   const [tarefaSelecionada, setTarefaSelecionada] =
     useState<Tarefa>(tarefaDefault);
   const [categoriasAtivas, setCategoriasAtivas] = useState<number[]>([]);
   const [abaTarefas, setAbaTarefas] = useState<abas>("atuais");
 
-  const [colFerramentas, setColFerramentas] = useState<number>(
-    window.innerWidth / 4
-  );
+  // Dimensões das barras laterais
+  const larguraTela = window.innerWidth;
+  const [colFerramentas, setColFerramentas] = useState<number>(larguraTela / 4);
+  const [colEdicao, setColEdicao] = useState<number>(larguraTela / 4);
   const [redimensionandoFerramentas, setRedimensionandoFerramentas] =
     useState<boolean>(false);
-
-  const [colEdicao, setColEdicao] = useState<number>(window.innerWidth / 4);
   const [redimensionandoEdicao, setRedimensionandoEdicao] =
     useState<boolean>(false);
 
+  // Filtros
   const [filtroTexto, setFiltroTexto] = useState<string>("");
   const [filtroData, setFiltroData] = useState<string>("");
 
-  const navigate = useNavigate();
+  // ESTRUTURA DAS REQUISIÇÕES
+  const requisidor = async (rota: string, metodo?: string, dados?: any) => {
+    const tokenJWT = localStorage.getItem("auth") || "";
+    if (metodo && dados) {
+      const retorno = await fetch(`http://localhost:3001/${rota}`, {
+        method: `${metodo}`,
+        headers: {
+          accept: "application/json, text/plain, */*",
+          "content-type": "application/json",
+          "x-access-token": tokenJWT,
+        },
+        body: JSON.stringify(dados),
+      });
+      const result = await retorno.json();
+      return result;
+    } else {
+      const retorno = await fetch(`http://localhost:3001/${rota}`, {
+        headers: {
+          "x-access-token": tokenJWT,
+        },
+      });
+      const result = await retorno.json();
+      return result;
+    }
+  };
 
+  // CONEXÃO INICIAL COM O BANCO DE DADOS
   useEffect(() => {
     configurarUsuario();
     listarTarefas();
     listarCategorias();
   }, []);
 
-  const movimentarColunaEsquerda = (
-    e: React.MouseEvent<HTMLElement, MouseEvent>
-  ) => {
-    if (redimensionandoFerramentas) {
-      const screenWidth = window.innerWidth;
-      let novaLargura: number;
-      if (e.clientX <= screenWidth / 5) novaLargura = screenWidth / 5;
-      else if (e.clientX >= screenWidth / 3) novaLargura = screenWidth / 3;
-      else novaLargura = e.clientX;
-      setColFerramentas(() => novaLargura);
+  const configurarUsuario = async () => {
+    const retorno = await requisidor("user");
+    const acessoNegado = retorno.result == "Acesso negado!";
+    const tokenInvalido = retorno.result == "Token inválido!";
+
+    if (acessoNegado || tokenInvalido) navigate("/login");
+    else setUser(() => retorno.usuario);
+  };
+
+  const listarTarefas = async () => {
+    const retorno: Tarefa[] = await requisidor("tasks");
+    const tarefas: Tarefa[] = retorno.map((tarefa: Tarefa) => {
+      return { ...tarefa, data_final: tarefa.data_final.substring(0, 10) };
+    });
+    setTarefas(() => tarefas);
+  };
+
+  const listarCategorias = async () => {
+    const retorno: Categoria[] = await requisidor("category");
+    const listaIdsCategorias = retorno.map(
+      (retorno: Categoria) => retorno.id_categoria
+    );
+    setCategorias(() => retorno);
+    setCategoriasAtivas(() => [0, ...listaIdsCategorias]);
+  };
+
+  // CONEXÃO COM O BANCO DE DADOS (EDIÇÃO)
+  const editarTarefa = async (tarefa: Tarefa, tipo: edicaoTarefa) => {
+    if (tipo == "check")
+      setTarefaSelecionada(() => {
+        return tarefaDefault;
+      });
+
+    const dados = {
+      id_tarefa: tarefa.id_tarefa,
+      titulo: tarefa.titulo,
+      descricao: tarefa.descricao,
+      data_final: tarefa.data_final,
+      categoria: tarefa.categoria,
+      realizada: tipo == "check" ? +!tarefa.realizada : +tarefa.realizada,
+    };
+    const retorno = await requisidor("tasks", "PUT", dados);
+
+    if (retorno.result == "Atividade atualizada com sucesso!") {
+      if (tipo == "check") {
+        editarTarefaCheck(tarefa);
+      } else if (tipo == "dados") {
+        editarTarefaDados(tarefa);
+      } else if (tipo == "categoria") {
+        editarTarefaCategoria(tarefa);
+      }
+    } else {
+      alert(retorno.result);
     }
   };
 
-  const movimentarColunaDireita = (
-    e: React.MouseEvent<HTMLElement, MouseEvent>
-  ) => {
-    if (redimensionandoEdicao) {
-      const screenWidth = window.innerWidth;
-      const tamanho = screenWidth - e.clientX;
-      let novaLargura: number;
-      if (tamanho <= screenWidth / 5) novaLargura = screenWidth / 5;
-      else if (tamanho >= screenWidth / 2.5) novaLargura = screenWidth / 2.5;
-      else novaLargura = tamanho;
-      setColEdicao(() => novaLargura);
-    }
-  };
-
+  // ACESSÓRIOS PARA EDIÇÃO
   const editarTarefaCheck = (tarefa: Tarefa) => {
     setTarefas((current: Tarefa[]) =>
       current.map((tarefaAtual: Tarefa) => {
@@ -133,90 +188,7 @@ export default function Home() {
     );
   };
 
-  const requisidor = async (rota: string, metodo?: string, dados?: any) => {
-    const tokenJWT = localStorage.getItem("auth") || "";
-    if (metodo && dados) {
-      const retorno = await fetch(`http://localhost:3001/${rota}`, {
-        method: `${metodo}`,
-        headers: {
-          accept: "application/json, text/plain, */*",
-          "content-type": "application/json",
-          "x-access-token": tokenJWT,
-        },
-        body: JSON.stringify(dados),
-      });
-      const result = await retorno.json();
-      return result;
-    } else {
-      const retorno = await fetch(`http://localhost:3001/${rota}`, {
-        headers: {
-          "x-access-token": tokenJWT,
-        },
-      });
-      const result = await retorno.json();
-      return result;
-    }
-  };
-
-  const configurarUsuario = async () => {
-    const retorno = await requisidor("user");
-    if (
-      retorno.result == "Acesso negado!" ||
-      retorno.result == "Token inválido!"
-    ) {
-      navigate("/login");
-    } else {
-      setUser(() => retorno.usuario);
-    }
-  };
-
-  const listarTarefas = async () => {
-    const retorno = await requisidor("tasks");
-    setTarefas(() =>
-      retorno.map((tarefa: Tarefa) => {
-        return { ...tarefa, data_final: tarefa.data_final.substring(0, 10) };
-      })
-    );
-  };
-
-  const listarCategorias = async () => {
-    const retorno = await requisidor("category");
-    setCategorias(() => retorno);
-    setCategoriasAtivas(() => [
-      0,
-      ...retorno.map((retorno: Categoria) => retorno.id_categoria),
-    ]);
-  };
-
-  const editarTarefa = async (tarefa: Tarefa, tipo: edicaoTarefa) => {
-    if (tipo == "check")
-      setTarefaSelecionada(() => {
-        return tarefaDefault;
-      });
-
-    const dados = {
-      id_tarefa: tarefa.id_tarefa,
-      titulo: tarefa.titulo,
-      descricao: tarefa.descricao,
-      data_final: tarefa.data_final,
-      categoria: tarefa.categoria,
-      realizada: tipo == "check" ? +!tarefa.realizada : +tarefa.realizada,
-    };
-    const retorno = await requisidor("tasks", "PUT", dados);
-
-    if (retorno.result == "Atividade atualizada com sucesso!") {
-      if (tipo == "check") {
-        editarTarefaCheck(tarefa);
-      } else if (tipo == "dados") {
-        editarTarefaDados(tarefa);
-      } else if (tipo == "categoria") {
-        editarTarefaCategoria(tarefa);
-      }
-    } else {
-      alert(retorno.result);
-    }
-  };
-
+  // FERRAMENTAS GERAIS
   const pegarNumeroTarefasVisualizacao = (nome: abas) => {
     const listaTarefasFiltradas = filtrarTarefasCategoriasAbas(
       tarefas,
@@ -228,6 +200,74 @@ export default function Home() {
     return listaTarefasFiltradas.length;
   };
 
+  const modificarVisualizacaoTarefas = (aba: abas) => {
+    setAbaTarefas(() => aba);
+  };
+
+  // SISTEMA DE REDIMENSIONAMENTO
+  const iniciarRedimensionamentoBarraFerramentas = () => {
+    setRedimensionandoFerramentas(() => true);
+  };
+
+  const iniciarRedimensionamentoEditorTarefa = () => {
+    setRedimensionandoEdicao(() => true);
+  };
+
+  const movimentarColunaEsquerda = (
+    e: React.MouseEvent<HTMLElement, MouseEvent>
+  ) => {
+    if (redimensionandoFerramentas) {
+      let novaLargura: number;
+      if (e.clientX <= larguraTela / 5) novaLargura = larguraTela / 5;
+      else if (e.clientX >= larguraTela / 3) novaLargura = larguraTela / 3;
+      else novaLargura = e.clientX;
+      setColFerramentas(() => novaLargura);
+    }
+  };
+
+  const movimentarColunaDireita = (
+    e: React.MouseEvent<HTMLElement, MouseEvent>
+  ) => {
+    if (redimensionandoEdicao) {
+      const tamanho = larguraTela - e.clientX;
+      let novaLargura: number;
+      if (tamanho <= larguraTela / 5) novaLargura = larguraTela / 5;
+      else if (tamanho >= larguraTela / 2.5) novaLargura = larguraTela / 2.5;
+      else novaLargura = tamanho;
+      setColEdicao(() => novaLargura);
+    }
+  };
+
+  const continuarRedimensionamento = (
+    e: React.MouseEvent<HTMLElement, MouseEvent>
+  ) => {
+    movimentarColunaEsquerda(e);
+    movimentarColunaDireita(e);
+  };
+
+  const encerrarRedimensionamento = () => {
+    setRedimensionandoFerramentas(() => false);
+    setRedimensionandoEdicao(() => false);
+  };
+
+  // HANDLER DE INPUT
+  const handleFiltroTextoValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFiltroTexto(() => e.target.value);
+  };
+
+  const limparFiltroTextoValue = () => {
+    setFiltroTexto(() => "");
+  };
+
+  const handleFiltroDataValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFiltroData(() => e.target.value);
+  };
+
+  const limparFiltroDataValue = () => {
+    setFiltroData(() => "");
+  };
+
+  // ESTILIZAÇÃO
   const style = {
     tela: "flex",
     barraEsquerda:
@@ -253,14 +293,8 @@ export default function Home() {
           <aside
             style={{ width: colFerramentas }}
             className={style.barraEsquerda}
-            onMouseUp={() => {
-              setRedimensionandoFerramentas(() => false);
-              setRedimensionandoEdicao(() => false);
-            }}
-            onMouseMove={(e) => {
-              movimentarColunaEsquerda(e);
-              movimentarColunaDireita(e);
-            }}
+            onMouseUp={encerrarRedimensionamento}
+            onMouseMove={continuarRedimensionamento}
           >
             <div>
               <div className={style.usuario}>
@@ -271,7 +305,7 @@ export default function Home() {
               <div>
                 <h2 className={style.tituloSecao}>Visualizações</h2>
                 <ul className={style.listaSecao}>
-                  {["atuais", "atrasadas", "realizadas"].map((visualizacao) => (
+                  {listaAbasVisualizacao.map((visualizacao) => (
                     <li
                       key={visualizacao}
                       className={style.visualizacao}
@@ -281,11 +315,11 @@ export default function Home() {
                             ? "#86a5c3"
                             : "transparent",
                       }}
-                      onClick={() => setAbaTarefas(() => visualizacao as abas)}
+                      onClick={() => modificarVisualizacaoTarefas(visualizacao)}
                     >
                       <span>{visualizacao}</span>
                       <span>
-                        {pegarNumeroTarefasVisualizacao(visualizacao as abas)}
+                        {pegarNumeroTarefasVisualizacao(visualizacao)}
                       </span>
                     </li>
                   ))}
@@ -297,14 +331,14 @@ export default function Home() {
                       type="text"
                       placeholder="Filtro textual"
                       value={filtroTexto}
-                      onChange={(e) => setFiltroTexto(() => e.target.value)}
+                      onChange={handleFiltroTextoValue}
                       className="rounded-l-md w-full p-3 outline-none"
                     />
                     <span
-                      onClick={() => setFiltroTexto(() => "")}
-                      className="w-10 cursor-pointer text-center bg-white rounded-r-md flex items-center justify-center"
+                      onClick={limparFiltroTextoValue}
+                      className="w-14 cursor-pointer text-center bg-white rounded-r-md flex items-center justify-center"
                     >
-                      <GrFormClose size={25} />
+                      <GrFormClose size={20} />
                     </span>
                   </div>
                   <div className="flex">
@@ -312,13 +346,13 @@ export default function Home() {
                       type="date"
                       className="rounded-l-md w-full p-3 outline-none"
                       value={filtroData}
-                      onChange={(e) => setFiltroData(() => e.target.value)}
+                      onChange={handleFiltroDataValue}
                     />
                     <span
-                      onClick={() => setFiltroData(() => "")}
-                      className="w-10 cursor-pointer text-center bg-white rounded-r-md flex items-center justify-center"
+                      onClick={limparFiltroDataValue}
+                      className="w-14 cursor-pointer text-center bg-white rounded-r-md flex items-center justify-center"
                     >
-                      <GrFormClose size={25} />
+                      <GrFormClose size={20} />
                     </span>
                   </div>
                 </div>
@@ -335,21 +369,13 @@ export default function Home() {
           </aside>
           <div
             className={style.redimensionador("#f7f9fa")}
-            onMouseDown={() => {
-              setRedimensionandoFerramentas(() => true);
-            }}
-            onMouseUp={() => setRedimensionandoFerramentas(() => false)}
+            onMouseDown={iniciarRedimensionamentoBarraFerramentas}
+            onMouseUp={encerrarRedimensionamento}
             onMouseMove={movimentarColunaEsquerda}
           ></div>
           <main
-            onMouseUp={() => {
-              setRedimensionandoFerramentas(() => false);
-              setRedimensionandoEdicao(() => false);
-            }}
-            onMouseMove={(e) => {
-              movimentarColunaEsquerda(e);
-              movimentarColunaDireita(e);
-            }}
+            onMouseUp={encerrarRedimensionamento}
+            onMouseMove={continuarRedimensionamento}
             className={style.central}
           >
             <div>
@@ -380,10 +406,8 @@ export default function Home() {
             <>
               <div
                 className={style.redimensionador("#fcfeff")}
-                onMouseDown={() => {
-                  setRedimensionandoEdicao(() => true);
-                }}
-                onMouseUp={() => setRedimensionandoEdicao(() => false)}
+                onMouseDown={iniciarRedimensionamentoEditorTarefa}
+                onMouseUp={encerrarRedimensionamento}
                 onMouseMove={movimentarColunaDireita}
               ></div>
               <Editor

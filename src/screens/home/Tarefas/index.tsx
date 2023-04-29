@@ -108,7 +108,9 @@ export default function Tarefas({
                       {tarefa.titulo}
                     </h3>
                     <div className={style.informacoes}>
-                      {tarefa.descricao && <BsFileText size={16} />}
+                      {tarefa.descricao && (
+                        <BsFileText size={16} color="#9ca3af" />
+                      )}
                       <span className={style.data}>
                         {formatarData(tarefa.data_final)}
                       </span>

@@ -286,6 +286,7 @@ export default function User() {
                   <button
                     type="submit"
                     className={style.botao("#e52727")}
+                    style={{backgroundColor: "#e52727"}}
                     onClick={apagarUsuario}
                   >
                     Excluir conta

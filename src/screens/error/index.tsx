@@ -22,7 +22,7 @@ export default function Error() {
       <div className={style.container}>
         <h1 className={style.erro}>
           {status[0]}
-          <span className="text-[#86a5c3]">{status[1]}</span>
+          <span className="text-[#86a5c3] text-8xl font-semibold">{status[1]}</span>
           {status[2]}
         </h1>
         <h2 className={style.titulo}>Página não enocntrada!</h2>

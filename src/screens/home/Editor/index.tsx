@@ -51,7 +51,7 @@ export default function Editor({
     campoInferior: "w-full",
     tituloData: "flex",
     titulo: "grow py-1 bg-transparent border-none text-base outline-none",
-    data: "w-32 p-1 bg-transparent border-none outline-none cursor-pointer text-base text-gray-500",
+    data: "p-1 bg-transparent border-none outline-none cursor-pointer text-base text-gray-500",
     descricao:
       "w-full h-[70vh] bg-transparent border-none outline-none text-gray-500 resize-none mt-3",
     botao:

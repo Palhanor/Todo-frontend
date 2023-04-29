@@ -179,13 +179,13 @@ export default function Categorias({
               className={style.ferramentaCategoria}
               onClick={ativarTodasCategorias}
             >
-              <BiCheckboxChecked size={24} />
+              <BiCheckboxChecked size={22} />
             </button>
             <button
               className={style.ferramentaCategoria}
               onClick={desativarTodasCategorias}
             >
-              <BiCheckboxMinus size={24} />
+              <BiCheckboxMinus size={22} />
             </button>
             <span
               onClick={campoCriarCategoria}
@@ -221,7 +221,8 @@ export default function Categorias({
             {novaCategoria && (
               <button
                 type="submit"
-                className={style.botao("#419e31")}
+                className={style.botao("#419E31")}
+                style={{ backgroundColor: "#419E31" }}
                 onClick={inserirCategoria}
               >
                 Adicionar
@@ -232,6 +233,7 @@ export default function Categorias({
                 <button
                   type="submit"
                   className={style.botao("#419e31")}
+                  style={{ backgroundColor: "#419E31" }}
                   onClick={() =>
                     editarCategoria({
                       id_categoria: edicaoCategoria.id_categoria,

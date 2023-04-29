@@ -25,7 +25,7 @@ export default function Ferramentas() {
 
   return (
     <span className={style.icone}>
-      <FiSettings size={18} onClick={() => setFerramentas((prev) => !prev)} />
+      <FiSettings size={16} onClick={() => setFerramentas((prev) => !prev)} />
       {ferramentas && (
         <div className={style.container}>
           <div

@@ -59,7 +59,7 @@ export const filtrarTarefasCategoriasAbas = (
                 dataTarefa < dataAtual && tarefa.realizada;
             switch (abaAtiva) {
                 case "atuais":
-                    return tarefaAtual || tarefaAtrasada;
+                    return tarefaAtual;
                 case "realizadas":
                     return tarefaRealizada;
                 case "atrasadas":
