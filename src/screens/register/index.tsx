@@ -26,7 +26,7 @@ export default function Register() {
       });
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const realiarCadastro = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     fetch("http://localhost:3001/auth/register", {
       method: "POST",
@@ -56,6 +56,21 @@ export default function Register() {
       });
   };
 
+  const handleNomeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNome(() => e.target.value);
+  };
+  const handleEmailValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(() => e.target.value);
+  };
+  const handleSenhaValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSenha(() => e.target.value);
+  };
+  const handleConfimacaoSenhaValue = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSenhaConfirmacao(() => e.target.value);
+  };
+
   const style = {
     tela: "bg-[#f7f9fa] h-screen pt-14 box-border",
     container: "w-1/3 m-auto bg-white rounded-md shadow-lg box-border p-7 pt-6",
@@ -76,7 +91,7 @@ export default function Register() {
         <div className={style.tela}>
           <div className={style.container}>
             <h1 className={style.titulo}>Cadastro</h1>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={realiarCadastro}>
               <label htmlFor="nome" className={style.label}>
                 Nome completo
               </label>
@@ -85,7 +100,7 @@ export default function Register() {
                 type="text"
                 placeholder="Nome completo"
                 value={nome}
-                onChange={(e) => setNome(() => e.target.value)}
+                onChange={handleNomeValue}
                 className={style.input}
               />
               <label htmlFor="email" className={style.label}>
@@ -96,7 +111,7 @@ export default function Register() {
                 type="email"
                 placeholder="Melhor endereço de E-mail"
                 value={email}
-                onChange={(e) => setEmail(() => e.target.value)}
+                onChange={handleEmailValue}
                 className={style.input}
               />
               <label htmlFor="senha" className={style.label}>
@@ -107,7 +122,7 @@ export default function Register() {
                 type="password"
                 placeholder="Senha segura"
                 value={senha}
-                onChange={(e) => setSenha(() => e.target.value)}
+                onChange={handleSenhaValue}
                 className={style.input}
               />
               <label htmlFor="confirmacaoSenha" className={style.label}>
@@ -118,7 +133,7 @@ export default function Register() {
                 type="password"
                 placeholder="Confirmação da senha"
                 value={senhaConfirmacao}
-                onChange={(e) => setSenhaConfirmacao(() => e.target.value)}
+                onChange={handleConfimacaoSenhaValue}
                 className={style.input}
               />
               <button type="submit" className={style.botao}>

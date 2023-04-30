@@ -7,7 +7,7 @@ import { BsArrowLeft } from "react-icons/bs";
 import { FaRegUserCircle } from "react-icons/fa";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { CgDanger } from "react-icons/cg";
-import "./style.css"
+import "./style.css";
 
 export default function User() {
   const [usuario, setUsuario] = useState<Usuario>(userDefault);
@@ -18,9 +18,9 @@ export default function User() {
   const [novaSenha, setNovaSenha] = useState("");
   const [confirmacaoSenha, setConfirmacaoSenha] = useState("");
 
-  const [visualizacao, setVisualizacao] = useState<
-    "conta" | "senha" | "avançado"
-  >("conta");
+  type abasFerramentas = "conta" | "senha" | "avançado";
+
+  const [visualizacao, setVisualizacao] = useState<abasFerramentas>("conta");
 
   const navigate = useNavigate();
 
@@ -43,7 +43,8 @@ export default function User() {
     }
   };
 
-  const atualizarUsuario = async (id: number) => {
+  const atualizarUsuario = async () => {
+    const id_usuario = usuario.id_usuario;
     const tokenJWT = localStorage.getItem("auth") || "";
     const retorno = await fetch(`http://localhost:3001/user`, {
       method: "PUT",
@@ -53,7 +54,7 @@ export default function User() {
         "x-access-token": tokenJWT,
       },
       body: JSON.stringify({
-        id_usuario: id,
+        id_usuario,
         nome,
         email,
         senhaAntiga,
@@ -93,6 +94,36 @@ export default function User() {
     }
   };
 
+  const navegarParaHome = () => {
+    navigate("/home");
+  };
+
+  const configurarNovaVisualizacao = (visualizacao: abasFerramentas) => {
+    setVisualizacao(() => visualizacao);
+  };
+
+  const handleNomeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNome(() => e.target.value);
+  };
+
+  const handleEmailValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(() => e.target.value);
+  };
+
+  const handleSenahAntigaValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSenhaAntiga(() => e.target.value);
+  };
+
+  const handleNovaSenhaValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNovaSenha(() => e.target.value);
+  };
+  
+  const handleConfirmacaoSenhaValue = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setConfirmacaoSenha(() => e.target.value);
+  };
+
   const style = {
     tela: "flex h-screen box-border bg-[#f7f9fa]",
     barraEsquerda: "w-[25vw] p-5 h-screen box-border bg-[#e2e9f0]",
@@ -117,7 +148,7 @@ export default function User() {
       {!!usuario.id_usuario ? (
         <div className={style.tela}>
           <aside className={style.barraEsquerda}>
-            <div className={style.voltar} onClick={() => navigate("/home")}>
+            <div className={style.voltar} onClick={navegarParaHome}>
               <BsArrowLeft size={24} /> Voltar
             </div>
             <h1 className={style.nomeUsuario}>{usuario.nome}</h1>
@@ -130,7 +161,7 @@ export default function User() {
                     backgroundColor:
                       visualizacao == "conta" ? "#86a5c3" : "transparent",
                   }}
-                  onClick={() => setVisualizacao(() => "conta")}
+                  onClick={() => configurarNovaVisualizacao("conta")}
                 >
                   <FaRegUserCircle />
                   Conta
@@ -141,7 +172,7 @@ export default function User() {
                     backgroundColor:
                       visualizacao == "senha" ? "#86a5c3" : "transparent",
                   }}
-                  onClick={() => setVisualizacao(() => "senha")}
+                  onClick={() => configurarNovaVisualizacao("senha")}
                 >
                   <RiLockPasswordLine />
                   Senha
@@ -152,7 +183,7 @@ export default function User() {
                     backgroundColor:
                       visualizacao == "avançado" ? "#86a5c3" : "transparent",
                   }}
-                  onClick={() => setVisualizacao(() => "avançado")}
+                  onClick={() => configurarNovaVisualizacao("avançado")}
                 >
                   <CgDanger />
                   Avançado
@@ -178,13 +209,13 @@ export default function User() {
                     type="text"
                     placeholder="Insira seu novo nome"
                     className={style.input}
-                    onChange={(e) => setNome(() => e.target.value)}
+                    onChange={handleNomeValue}
                   />
                   <div className={style.containerBotao}>
                     <button
                       type="submit"
                       className={style.botao("#86a5c3")}
-                      onClick={() => atualizarUsuario(usuario.id_usuario)}
+                      onClick={atualizarUsuario}
                     >
                       Salvar nome
                     </button>
@@ -208,13 +239,13 @@ export default function User() {
                     type="email"
                     placeholder="Insira seu novo e-mail"
                     className={style.input}
-                    onChange={(e) => setEmail(() => e.target.value)}
+                    onChange={handleEmailValue}
                   />
                   <div className={style.containerBotao}>
                     <button
                       type="submit"
                       className={style.botao("#86a5c3")}
-                      onClick={() => atualizarUsuario(usuario.id_usuario)}
+                      onClick={atualizarUsuario}
                     >
                       Salvar e-mail
                     </button>
@@ -239,7 +270,7 @@ export default function User() {
                     id="senhaAtual"
                     type="password"
                     placeholder="Insira sua senha atual"
-                    onChange={(e) => setSenhaAntiga(() => e.target.value)}
+                    onChange={handleSenahAntigaValue}
                     className={style.input}
                   />
                   <label htmlFor="novaSenha" className={style.label}>
@@ -249,7 +280,7 @@ export default function User() {
                     id="novaSenha"
                     type="password"
                     placeholder="Insira sua nova senha"
-                    onChange={(e) => setNovaSenha(() => e.target.value)}
+                    onChange={handleNovaSenhaValue}
                     className={style.input}
                   />
                   <label htmlFor="confirmacaoSenha" className={style.label}>
@@ -259,7 +290,7 @@ export default function User() {
                     id="confirmacaoSenha"
                     type="password"
                     placeholder="Confirme sua nova senha"
-                    onChange={(e) => setConfirmacaoSenha(() => e.target.value)}
+                    onChange={handleConfirmacaoSenhaValue}
                     className={style.input}
                   />
                 </div>
@@ -267,7 +298,7 @@ export default function User() {
                   <button
                     type="submit"
                     className={style.botao("#86a5c3")}
-                    onClick={() => atualizarUsuario(usuario.id_usuario)}
+                    onClick={atualizarUsuario}
                   >
                     Salvar senha
                   </button>
@@ -286,7 +317,7 @@ export default function User() {
                   <button
                     type="submit"
                     className={style.botao("#e52727")}
-                    style={{backgroundColor: "#e52727"}}
+                    style={{ backgroundColor: "#e52727" }}
                     onClick={apagarUsuario}
                   >
                     Excluir conta

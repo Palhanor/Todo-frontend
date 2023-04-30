@@ -10,10 +10,8 @@ export default function Editor({
   setTarefaSelecionada,
   requisidor,
   editarTarefa,
-  setRedimensionandoFerramentas,
-  setRedimensionandoEdicao,
-  movimentarColunaEsquerda,
-  movimentarColunaDireita,
+  encerrarRedimensionamento,
+  continuarRedimensionamento,
   tarefaSelecionada,
   categorias,
   colEdicao,
@@ -42,8 +40,61 @@ export default function Editor({
     }
   };
 
+  const removerTarefaSelecionada = () => {
+    setTarefaSelecionada(() => {
+      return tarefaDefault;
+    });
+  };
+
+  const atualiarCategoriaTarefaSelecionada = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const id_categoria = Number(e.target.value);
+    editarTarefa(
+      {
+        ...tarefaSelecionada,
+        categoria: id_categoria == 0 ? null : id_categoria,
+      },
+      "categoria"
+    );
+  };
+
+  const atualizarTituloTarefaSelecionada = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const novaTarefa = {
+      ...tarefaSelecionada,
+      titulo: e.target.value,
+    };
+    setTarefaSelecionada(() => novaTarefa);
+    editarTarefa(novaTarefa, "dados");
+  };
+
+  const editarViewDescricaoTarefaSelecionada = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setTarefaSelecionada((atual: Tarefa) => {
+      return { ...atual, descricao: e.target.value };
+    });
+  };
+
+  const atualizarDescricaoTarefaSelecionada = () => {
+    editarTarefa(tarefaSelecionada, "dados");
+  };
+
+  const atualizarDataTarefaSelecionada = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const novaTarefa = {
+      ...tarefaSelecionada,
+      data_final: e.target.value,
+    };
+    setTarefaSelecionada(() => novaTarefa);
+    editarTarefa(novaTarefa, "dados");
+  };
+
   const style = {
-    barraDireita: "bg-[#fcfeff] h-screen p-4 pt-3 box-border",
+    barraDireita: `bg-[#fcfeff] h-screen p-4 pt-3 box-border`,
     campoSuperior: "flex justify-between items-center my-3",
     fechar: "cursor-pointer",
     selecaoCategoria:
@@ -65,42 +116,17 @@ export default function Editor({
       style={{
         width: colEdicao,
       }}
-      onMouseUp={() => {
-        setRedimensionandoFerramentas(() => false);
-        setRedimensionandoEdicao(() => false);
-      }}
-      onMouseMove={(e) => {
-        movimentarColunaEsquerda(e);
-        movimentarColunaDireita(e);
-      }}
+      onMouseUp={encerrarRedimensionamento}
+      onMouseMove={continuarRedimensionamento}
     >
       <div className={style.campoSuperior}>
-        <span
-          className={style.fechar}
-          onClick={() =>
-            setTarefaSelecionada(() => {
-              return tarefaDefault;
-            })
-          }
-        >
+        <span className={style.fechar} onClick={removerTarefaSelecionada}>
           <GrFormClose size={32} />
         </span>
         <select
           value={selectCategoria}
           className={style.selecaoCategoria}
-          onChange={(e) =>
-            editarTarefa(
-              {
-                ...tarefaSelecionada,
-                categoria:
-                  categorias.find(
-                    (categoria) =>
-                      categoria.id_categoria == Number(e.target.value)
-                  )?.id_categoria || null,
-              },
-              "categoria"
-            )
-          }
+          onChange={atualiarCategoriaTarefaSelecionada}
         >
           <option value="0">Sem categoria</option>
           {categorias.map((categoria) => (
@@ -117,30 +143,14 @@ export default function Editor({
             type="text"
             placeholder="Edite o titulo da tarefa"
             value={tarefaSelecionada.titulo}
-            onChange={(e) => {
-              setTarefaSelecionada((atual: Tarefa) => {
-                return { ...atual, titulo: e.target.value };
-              });
-              editarTarefa(
-                { ...tarefaSelecionada, titulo: e.target.value },
-                "dados"
-              );
-            }}
+            onChange={atualizarTituloTarefaSelecionada}
             className={style.titulo}
           />
           <input
             required
             type="date"
             value={tarefaSelecionada.data_final}
-            onChange={(e) => {
-              setTarefaSelecionada((atual: Tarefa) => {
-                return { ...atual, data_final: e.target.value };
-              });
-              editarTarefa(
-                { ...tarefaSelecionada, data_final: e.target.value },
-                "dados"
-              );
-            }}
+            onChange={atualizarDataTarefaSelecionada}
             className={style.data}
           />
         </div>
@@ -149,17 +159,8 @@ export default function Editor({
           rows={10}
           className={style.descricao}
           value={tarefaSelecionada.descricao}
-          onChange={(e) => {
-            setTarefaSelecionada((atual: Tarefa) => {
-              return { ...atual, descricao: e.target.value };
-            });
-          }}
-          onBlur={(e) => {
-            editarTarefa(
-              { ...tarefaSelecionada, descricao: e.target.value },
-              "dados"
-            );
-          }}
+          onChange={editarViewDescricaoTarefaSelecionada}
+          onBlur={atualizarDescricaoTarefaSelecionada}
         ></textarea>
         <div>
           <button

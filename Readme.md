@@ -36,11 +36,10 @@
 - Drag and drop parar ajustar a ordem de tarefas
 - Drag and drop parar ajustar a ordem de categorias
 
-
 ### OUTROS
 
 Atuais
-Atrsadas 
+Atrsadas
 
 Realiadas
 Perdidas

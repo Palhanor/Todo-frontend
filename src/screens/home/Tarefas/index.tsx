@@ -26,6 +26,14 @@ export default function Tarefas({
     );
   };
 
+  const selecionarTarefaAbrirEditor = (tarefa: Tarefa) => {
+    setTarefaSelecionada((tarefaAnterior) => {
+      return tarefaAnterior.id_tarefa == tarefa.id_tarefa
+        ? tarefaDefault
+        : tarefa;
+    });
+  };
+
   const style = {
     lista: "list-none p-0 m-0",
     toggle: "cursor-pointer",
@@ -83,27 +91,20 @@ export default function Tarefas({
                     />
                   </div>
                   <div
-                    onClick={() =>
-                      setTarefaSelecionada((tarefaAnterior) => {
-                        return tarefaAnterior.id_tarefa == tarefa.id_tarefa
-                          ? tarefaDefault
-                          : tarefa;
-                      })
-                    }
+                    onClick={() => selecionarTarefaAbrirEditor(tarefa)}
                     className={style.nomeContainer}
                   >
                     <h3
-                      className={style.nome}
-                      style={{
-                        textDecoration: tarefa.realizada
-                          ? "line-through"
-                          : "none",
-                        color: tarefa.realizada
-                          ? "#999"
-                          : tarefa.data_final < pegarDataAtual()
-                          ? "#d02424"
-                          : "black",
-                      }}
+                      className={
+                        style.nome +
+                        ` ${
+                          tarefa.realizada
+                            ? "line-through text-gray-500"
+                            : tarefa.data_final < pegarDataAtual()
+                            ? "text-red-700"
+                            : ""
+                        }`
+                      }
                     >
                       {tarefa.titulo}
                     </h3>

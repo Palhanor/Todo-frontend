@@ -8,10 +8,8 @@ export interface EditorProps {
     setTarefaSelecionada: React.Dispatch<React.SetStateAction<Tarefa>>;
     requisidor: (rota: string, metodo?: string, dados?: any) => Promise<any>;
     editarTarefa: (tarefa: Tarefa, tipo: edicaoTarefa) => Promise<void>;
-    setRedimensionandoFerramentas: React.Dispatch<React.SetStateAction<boolean>>,
-    setRedimensionandoEdicao: React.Dispatch<React.SetStateAction<boolean>>,
-    movimentarColunaEsquerda: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
-    movimentarColunaDireita: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
+    encerrarRedimensionamento: () => void
+    continuarRedimensionamento: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void
     tarefaSelecionada: Tarefa;
     categorias: Categoria[];
     colEdicao: number;

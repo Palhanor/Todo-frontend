@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
-import Categoria from "../../../interfaces/categoria";
+import { useState } from "react";
+import ICategoria from "../../../interfaces/categoria";
 import { CategoriasProps } from "../../../interfaces/props";
 import { categoriaDefault } from "../../../utils/modelos";
-import { AiFillEdit } from "react-icons/ai";
-import { GrFormClose } from "react-icons/gr";
 import {
   BiPlusCircle,
   BiMinusCircle,
@@ -11,6 +9,7 @@ import {
   BiCheckboxChecked,
 } from "react-icons/bi";
 import "./style.css";
+import Categoria from "./Categoria";
 
 export default function Categorias({
   categorias,
@@ -22,24 +21,13 @@ export default function Categorias({
 }: CategoriasProps) {
   const [novaCategoria, setNovaCategoria] = useState(false);
   const [edicaoCategoria, setEdicaoCategoria] =
-    useState<Categoria>(categoriaDefault);
-
-  const [nomeCategoria, setNomeCategoria] = useState("");
-  const [corCategoria, setCorCategoria] = useState("#86a5c3");
+    useState<ICategoria>(categoriaDefault);
+  const [nomeNovaCategoria, setNomeNovaCategoria] = useState("");
+  const [corNovaCategoria, setCorNovaCategoria] = useState("#86a5c3");
 
   const [mostrarFerramentas, setMostrarFerramentas] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (edicaoCategoria) {
-      setNomeCategoria(() => edicaoCategoria.nome_categoria);
-      setCorCategoria(() => edicaoCategoria.cor);
-    } else {
-      setNomeCategoria(() => "");
-      setCorCategoria(() => "#86a5c3");
-    }
-  }, [edicaoCategoria]);
-
-  const selecaoCategoria = (categoria: number) => {
+  const selecionarCategoria = (categoria: number) => {
     const categoriaSelecionada = categoriasAtivas.includes(categoria);
     if (categoriaSelecionada) {
       setCategoriasAtivas((anteriores) =>
@@ -52,34 +40,34 @@ export default function Categorias({
 
   const inserirCategoria = async () => {
     const dados = {
-      nome: nomeCategoria,
-      cor: corCategoria,
+      nome: nomeNovaCategoria,
+      cor: corNovaCategoria,
     };
     const retorno = await requisidor("category", "POST", dados);
 
     if (retorno.result == "Categoria adicionada com sucesso!") {
       const novaCategoria = {
         id_categoria: retorno.id_categoria,
-        nome_categoria: nomeCategoria,
-        cor: corCategoria,
+        nome_categoria: nomeNovaCategoria,
+        cor: corNovaCategoria,
       };
-      setCategorias((categoriasAnteriores: Categoria[]) => [
+      setCategorias((categoriasAnteriores: ICategoria[]) => [
         ...categoriasAnteriores,
         novaCategoria,
       ]);
       setCategoriasAtivas((prev) => [...prev, novaCategoria.id_categoria]);
-      setNomeCategoria(() => "");
-      setCorCategoria(() => "#86a5c3");
+      setNomeNovaCategoria(() => "");
+      setCorNovaCategoria(() => "#86a5c3");
     } else {
       alert(retorno.result);
     }
   };
 
-  const editarCategoria = async (categoria: Categoria) => {
+  const editarCategoria = async (categoria: ICategoria) => {
     const retorno = await requisidor("category", "PUT", categoria);
 
     if (retorno.result == "Categoria editada com sucesso!") {
-      setCategorias((categoriasAnteriores: Categoria[]) =>
+      setCategorias((categoriasAnteriores: ICategoria[]) =>
         categoriasAnteriores.map((categoriaAnterior) =>
           categoriaAnterior.id_categoria == categoria.id_categoria
             ? categoria
@@ -99,7 +87,7 @@ export default function Categorias({
     const retorno = await requisidor("category", "DELETE", dados);
 
     if ((retorno.result = "Categoria apagada")) {
-      setCategorias((categoriasAnteriores: Categoria[]) =>
+      setCategorias((categoriasAnteriores: ICategoria[]) =>
         categoriasAnteriores.filter(
           (categoriaAnterior) => categoriaAnterior.id_categoria !== id
         )
@@ -126,15 +114,13 @@ export default function Categorias({
     setCategoriasAtivas(() => []);
   };
 
-  const campoCriarCategoria = () => {
-    if (edicaoCategoria.id_categoria)
-      setEdicaoCategoria(() => categoriaDefault);
+  const exibirCampoCriarCategoria = () => {
     setNovaCategoria((prev) => !prev);
   };
 
   const controlarEdicaoCategoria = (
     e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
-    categoria: Categoria
+    categoria: ICategoria
   ) => {
     e.stopPropagation();
     if (novaCategoria) setNovaCategoria(() => false);
@@ -143,6 +129,22 @@ export default function Categorias({
         ? categoriaDefault
         : categoria;
     });
+  };
+
+  const exibirFerramentasCategoria = () => {
+    setMostrarFerramentas(() => true);
+  };
+
+  const ocultarFerramentasCategoria = () => {
+    setMostrarFerramentas(() => false);
+  };
+
+  const handleNomeCategoriaValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNomeNovaCategoria(() => e.target.value);
+  };
+
+  const handleCorCategoriaValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCorNovaCategoria(() => e.target.value);
   };
 
   const style = {
@@ -159,18 +161,14 @@ export default function Categorias({
     botao: (cor: string) =>
       `border-none rounded-md w-full bg-[${cor}] p-3 cursor-pointer`,
     listaCategorias: "list-none",
-    bordaCategoria:
-      "p-0.5 pl-2 w-full box-border text-base cursor-pointer mb-3 rounded-md capitalize",
-    categoria: "flex justify-between items-center p-2 rounded-md",
-    tituloCategoria: "text-small font-medium",
   };
 
   return (
     <>
       <div
         className={style.container}
-        onMouseEnter={() => setMostrarFerramentas(() => true)}
-        onMouseLeave={() => setMostrarFerramentas(() => false)}
+        onMouseEnter={exibirFerramentasCategoria}
+        onMouseLeave={ocultarFerramentasCategoria}
       >
         <h2 className={style.tituloSecao}>Categorias</h2>
         {mostrarFerramentas && (
@@ -188,7 +186,7 @@ export default function Categorias({
               <BiCheckboxMinus size={22} />
             </button>
             <span
-              onClick={campoCriarCategoria}
+              onClick={exibirCampoCriarCategoria}
               className={style.ferramentaCategoria}
             >
               {novaCategoria ? (
@@ -200,21 +198,21 @@ export default function Categorias({
           </div>
         )}
       </div>
-      {(novaCategoria || !!edicaoCategoria.id_categoria) && (
+      {novaCategoria && (
         <div className={style.edicaoCriacaoContainer}>
           <div className={style.nomeCorContainer}>
             <input
               type="text"
               placeholder="Nome da categoria"
-              value={nomeCategoria}
-              onChange={(e) => setNomeCategoria(() => e.target.value)}
+              value={nomeNovaCategoria}
+              onChange={handleNomeCategoriaValue}
               className={style.inputNome}
             />
             <input
               type="color"
               className="inputCor"
-              value={corCategoria}
-              onChange={(e) => setCorCategoria(() => e.target.value)}
+              value={corNovaCategoria}
+              onChange={handleCorCategoriaValue}
             />
           </div>
           <div className={style.botaoContainer}>
@@ -228,85 +226,31 @@ export default function Categorias({
                 Adicionar
               </button>
             )}
-            {!!edicaoCategoria.id_categoria && (
-              <>
-                <button
-                  type="submit"
-                  className={style.botao("#419e31")}
-                  style={{ backgroundColor: "#419E31" }}
-                  onClick={() =>
-                    editarCategoria({
-                      id_categoria: edicaoCategoria.id_categoria,
-                      nome_categoria: nomeCategoria,
-                      cor: corCategoria,
-                    })
-                  }
-                >
-                  Editar
-                </button>
-                <button
-                  type="submit"
-                  className={style.botao("#e23936")}
-                  onClick={() => excluirCategoria(edicaoCategoria.id_categoria)}
-                >
-                  Apagar
-                </button>
-              </>
-            )}
           </div>
         </div>
       )}
       <ul className={style.listaCategorias}>
-        <li
-          key={categoriaDefault.id_categoria}
-          className={style.bordaCategoria}
-          style={{ backgroundColor: categoriaDefault.cor }}
-          onClick={() => selecaoCategoria(categoriaDefault.id_categoria)}
-        >
-          <div
-            className={style.categoria}
-            style={{
-              backgroundColor: categoriasAtivas.includes(
-                categoriaDefault.id_categoria
-              )
-                ? categoriaDefault.cor
-                : "#e2e9f0",
-            }}
-          >
-            <h4 className={style.tituloCategoria}>Sem categoria</h4>
-          </div>
-        </li>
+        <Categoria
+          key={0}
+          categoria={categoriaDefault}
+          categoriasAtivas={categoriasAtivas}
+          edicaoCategoria={edicaoCategoria}
+          selecionarCategoria={selecionarCategoria}
+          controlarEdicaoCategoria={controlarEdicaoCategoria}
+          excluirCategoria={excluirCategoria}
+          editarCategoria={editarCategoria}
+        />
         {categorias.map((categoria) => (
-          <li
+          <Categoria
             key={categoria.id_categoria}
-            className={style.bordaCategoria}
-            style={{
-              backgroundColor: categoria.cor,
-            }}
-            onClick={() => selecaoCategoria(categoria.id_categoria)}
-          >
-            <div
-              className={style.categoria}
-              style={{
-                backgroundColor: categoriasAtivas.includes(
-                  categoria.id_categoria
-                )
-                  ? categoria.cor
-                  : "#e2e9f0",
-              }}
-            >
-              <h4 className={style.tituloCategoria}>
-                {categoria.nome_categoria}
-              </h4>
-              <span onClick={(e) => controlarEdicaoCategoria(e, categoria)}>
-                {edicaoCategoria.id_categoria != categoria.id_categoria ? (
-                  <AiFillEdit />
-                ) : (
-                  <GrFormClose size={24} />
-                )}
-              </span>
-            </div>
-          </li>
+            categoria={categoria}
+            categoriasAtivas={categoriasAtivas}
+            edicaoCategoria={edicaoCategoria}
+            selecionarCategoria={selecionarCategoria}
+            controlarEdicaoCategoria={controlarEdicaoCategoria}
+            excluirCategoria={excluirCategoria}
+            editarCategoria={editarCategoria}
+          />
         ))}
       </ul>
     </>

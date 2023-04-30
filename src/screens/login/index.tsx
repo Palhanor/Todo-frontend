@@ -28,7 +28,7 @@ export default function Login() {
       });
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const executarLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     fetch("http://localhost:3001/auth/login", {
@@ -51,6 +51,18 @@ export default function Login() {
           alert(res.result);
         }
       });
+  };
+
+  const exibirEsconderSenha = () => {
+    setVisualizarSenha((prev) => !prev);
+  };
+
+  const handleEmailValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(() => e.target.value);
+  };
+
+  const handleSenhaValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSenha(() => e.target.value);
   };
 
   const style = {
@@ -77,7 +89,7 @@ export default function Login() {
         <div className={style.tela}>
           <div className={style.container}>
             <h1 className={style.titulo}>Entrar</h1>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={executarLogin}>
               <label htmlFor="email" className={style.label}>
                 E-mail
               </label>
@@ -86,7 +98,7 @@ export default function Login() {
                 type="email"
                 placeholder="E-mail cadastrado"
                 value={email}
-                onChange={(e) => setEmail(() => e.target.value)}
+                onChange={handleEmailValue}
                 className={style.input}
               />
               <label htmlFor="senha" className={style.label}>
@@ -98,17 +110,17 @@ export default function Login() {
                   type={!visualizarSenha ? "password" : "text"}
                   placeholder="Senha cadastrada"
                   value={senha}
-                  onChange={(e) => setSenha(() => e.target.value)}
+                  onChange={handleSenhaValue}
                   className={style.inputSenha}
                 />
                 <span
-                  onClick={() => setVisualizarSenha((prev) => !prev)}
+                  onClick={exibirEsconderSenha}
                   className={style.visualiadorSenha}
                 >
-                  {!visualizarSenha ? (
-                    <AiFillEye size={20} color="#666" />
-                  ) : (
+                  {visualizarSenha ? (
                     <AiFillEyeInvisible size={20} color="#666" />
+                    ) : (
+                    <AiFillEye size={20} color="#666" />
                   )}
                 </span>
               </div>

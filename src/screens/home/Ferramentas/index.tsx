@@ -12,6 +12,14 @@ export default function Ferramentas() {
     navigate("/login");
   };
 
+  const abrirFecharConfiguracaoUsuario = () => {
+    setFerramentas((prev) => !prev);
+  };
+
+  const navegarParaAreaUsuario = () => {
+    navigate("/user");
+  };
+
   const style = {
     icone: "cursor-pointer relative",
     container:
@@ -25,13 +33,10 @@ export default function Ferramentas() {
 
   return (
     <span className={style.icone}>
-      <FiSettings size={16} onClick={() => setFerramentas((prev) => !prev)} />
+      <FiSettings size={16} onClick={abrirFecharConfiguracaoUsuario} />
       {ferramentas && (
         <div className={style.container}>
-          <div
-            onClick={() => navigate("/user")}
-            className={style.primeiraOpcao}
-          >
+          <div onClick={navegarParaAreaUsuario} className={style.primeiraOpcao}>
             <BiUserCircle size={18} />
             <span className={style.ilustracao}>Configurações</span>
           </div>

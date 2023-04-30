@@ -1,24 +1,20 @@
-// TODO: Desenvolver a pagina de landingPage
-// TODO: Criar sistema de ajuste das visualizações dentro das configurações de usuário (hoje, futuras, atrasadas, historico [perdidas e realizadas], excluídas)
-// TODO: Salvar dados no local storage (visualizacoes, largura das barras laterais, details abertos...)
+// TODO: Adicionar a visualização de quantidade de tarefas de cada categoria
+// TODO: Tirar o JWT do localStorage para os cookies (evitar XSS)
 // TODO: Implementar o Redux para a gestão dos estados
+// TODO: Implementar o Axios para as requisições da API
 
 // TODO: Adicionar o campo de categorias na area de tarefas sendo criadas
 // TODO: Adicionar o sistema de prioridade das tarefas
-// TODO: Criar sistema de tarefas perdidas
 // TODO: Adicionar o sistema de tarefas excluidas
+// TODO: Criar sistema de tarefas perdidas
 
+// TODO: Desenvolver a landing page
 // TODO: Fazer os ajustes de responsividade no sistema
+// TODO: Criar sistema de ajuste das visualizações dentro das configurações de usuário (hoje, futuras, atrasadas, historico [perdidas e realizadas], excluídas)
 
+// TODO: Salvar dados no local storage (visualizacoes, largura das barras laterais, details abertos...)
 // TODO: Fazer o tratamento dos erros no front-end antes de enviar os dados
 // TODO: Receber os erros do backend e exibir de uma forma melhorada
-
-// TODO: Tirar o JWT do localStorage para os cookies (evitar XSS)
-
-// TODO: Refatorar os códigos de toda aplicação
-
-// TODO: Modificar o sistema de criação e edição de categorias (parecer com o ChatGPT)
-
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -280,7 +276,7 @@ export default function Home() {
     visualizacao:
       "flex justify-between px-3 py-2 w-full box-border text-normal cursor-pointer mb-2 rounded-md capitalize",
     central:
-      "campo_tarefas grow px-5 pb-5 h-screen overflow-y-scroll box-border bg-[#f7f9fa]",
+      `campo_tarefas grow px-5 pb-5 h-screen overflow-y-scroll box-border bg-[#f7f9fa]`,
     titulo: "text-lg mt-5 mb-4 font-semibold",
     redimensionador: (cor: string) =>
       `bg-[${cor}] w-1 h-screen cursor-col-resize`,
@@ -415,10 +411,8 @@ export default function Home() {
                 setTarefaSelecionada={setTarefaSelecionada}
                 requisidor={requisidor}
                 editarTarefa={editarTarefa}
-                setRedimensionandoFerramentas={setRedimensionandoFerramentas}
-                setRedimensionandoEdicao={setRedimensionandoEdicao}
-                movimentarColunaEsquerda={movimentarColunaEsquerda}
-                movimentarColunaDireita={movimentarColunaDireita}
+                encerrarRedimensionamento={encerrarRedimensionamento}
+                continuarRedimensionamento={continuarRedimensionamento}
                 tarefaSelecionada={tarefaSelecionada}
                 categorias={categorias}
                 colEdicao={colEdicao}

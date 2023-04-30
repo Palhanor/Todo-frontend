@@ -45,6 +45,14 @@ export default function FormTarefa({
     }
   };
 
+  const handleTituloValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitulo(() => e.target.value)
+  }
+
+  const handleDataValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDataFinal(() => e.target.value)
+  }
+
   const style = {
     form: "flex w-full gap-2.5",
     inputTarefa: "grow p-4 border-none rounded-md bg-[#e2e9f0] outline-none",
@@ -60,14 +68,14 @@ export default function FormTarefa({
         type="text"
         placeholder="Insira uma nova tarefa"
         value={titulo}
-        onChange={(e) => setTitulo(() => e.target.value)}
+        onChange={handleTituloValue}
         className={style.inputTarefa}
       />
       <input
         required
         type="date"
         value={dataFinal}
-        onChange={(e) => setDataFinal(() => e.target.value)}
+        onChange={handleDataValue}
         className={style.inputData}
       />
       <button type="submit" className={style.botao}>
