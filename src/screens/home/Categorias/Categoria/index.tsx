@@ -44,8 +44,11 @@ export default function Categoria({
   };
 
   const quantidadeTarefasCategoria = (id_categoria: number) => {
-    return tarefas.filter((tarefa: Tarefa) => tarefa.categoria == id_categoria)
-      .length;
+    return tarefas.filter((tarefa: Tarefa) => {
+      const semCategoria = !tarefa.categoria && !id_categoria;
+      const temCategoriaIgual = tarefa.categoria == id_categoria;
+      return semCategoria || temCategoriaIgual;
+    }).length;
   };
 
   const style = {
@@ -110,18 +113,32 @@ export default function Categoria({
         {!!categoria.id_categoria && exibindoEdicao ? (
           <span>
             {edicaoCategoria.id_categoria != categoria.id_categoria ? (
-              <span onClick={(e) => controlarEdicaoCategoria(e, categoria)}>
+              <span
+                title="Editar categoria"
+                aria-label="Editar categoria"
+                onClick={(e) => controlarEdicaoCategoria(e, categoria)}
+              >
                 <AiFillEdit />
               </span>
             ) : (
               <div className="flex gap-2 items-center">
-                <span onClick={dispararEdicaoCategoria}>
+                <span
+                  title="Confirmar edição"
+                  aria-label="Confirmar edição"
+                  onClick={dispararEdicaoCategoria}
+                >
                   <BsCheck size={20} />
                 </span>
-                <span onClick={(e) => controlarEdicaoCategoria(e, categoria)}>
+                <span
+                  title="Cancelar edição"
+                  aria-label="Cancelar edição"
+                  onClick={(e) => controlarEdicaoCategoria(e, categoria)}
+                >
                   <GrFormClose size={20} />
                 </span>
                 <span
+                  title="Excluir categoria"
+                  aria-label="Excluir categoria"
                   onClick={() =>
                     setExibindoModal(() => {
                       return {

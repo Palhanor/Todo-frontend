@@ -1,41 +1,46 @@
 // TODO: Ajeitar o sisetma de criação de categorias
-// TODO: Ajeitar a estrutura do campo de edição de tarefas
-// TODO: Adicionar o sistema de modal para exclusão dentro da área de usuário
 // TODO: Tirar o JWT do localStorage para os cookies (evitar XSS)
-// TODO: Implementar o Redux para a gestão dos estados
+// TODO: Salvar dados no local storage (visualizacoes, largura das barras laterais, details abertos...)
+
 // TODO: Implementar o Axios para as requisições da API
+// TODO: Implementar o Redux para a gestão dos estados
+// TODO: Implementar hooks personalizados para descoplamento do sistema
 
-// TODO: Desenvolver a landing page
-// TODO: Fazer os ajustes de responsividade no sistema
-
-// TODO: Adicionar o campo de categorias na area de tarefas sendo criadas
 // TODO: Adicionar o sistema de prioridade das tarefas
 // TODO: Adicionar o sistema de tarefas excluidas
 // TODO: Criar sistema de tarefas perdidas
 
-// TODO: Criar sistema de ajuste das visualizações dentro das configurações de usuário (hoje, futuras, atrasadas, historico [perdidas e realizadas], excluídas)
-// TODO: Salvar dados no local storage (visualizacoes, largura das barras laterais, details abertos...)
+// TODO: Desenvolver a landing page
+// TODO: Fazer os ajustes de responsividade no sistema (mobile)
+
+// TODO: Adicionar as novas visualizações (histórico [perdidas e realizadas], excuídas)
+// TODO: Criar sistema de ajuste das visualizações dentro das configurações de usuário
 // TODO: Fazer o tratamento dos erros no front-end antes de enviar os dados
 // TODO: Receber os erros do backend e exibir de uma forma melhorada
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import Editor from "./Editor";
 import Categorias from "./Categorias";
 import Tarefas from "./Tarefas";
 import FormTarefa from "./FormTarefa";
 import Ferramentas from "./Ferramentas";
 import Loading from "../Loading";
+import Modal from "../../components/modal";
+
+import { filtrarTarefasCategoriasAbas } from "../../utils/tarefas";
 import { modalDefault, tarefaDefault, userDefault } from "../../utils/modelos";
+
 import Tarefa from "../../interfaces/tarefa";
 import Usuario from "../../interfaces/usuario";
-import { abas, edicaoTarefa } from "../../interfaces/types";
 import Categoria from "../../interfaces/categoria";
-import { filtrarTarefasCategoriasAbas } from "../../utils/tarefas";
-import { GrFormClose } from "react-icons/gr";
-import "./style.css";
-import Modal from "../../components/modal";
 import { IModal } from "../../interfaces/modal";
+import { abas, edicaoTarefa } from "../../interfaces/types";
+
+import { GrFormClose } from "react-icons/gr";
+
+import "./style.css";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -337,6 +342,8 @@ export default function Home() {
                       className="rounded-l-md w-full p-3 outline-none"
                     />
                     <span
+                      title="Apagar filtro de texto"
+                      aria-label="Apagar filtro de texto"
                       onClick={limparFiltroTextoValue}
                       className="w-14 cursor-pointer text-center bg-white rounded-r-md flex items-center justify-center"
                     >
@@ -351,6 +358,8 @@ export default function Home() {
                       onChange={handleFiltroDataValue}
                     />
                     <span
+                      title="Apagar filtro de data"
+                      aria-label="Apagar filtro de data"
                       onClick={limparFiltroDataValue}
                       className="w-14 cursor-pointer text-center bg-white rounded-r-md flex items-center justify-center"
                     >
@@ -385,6 +394,8 @@ export default function Home() {
             <div>
               <h2 className={style.titulo}>Nova Tarefa</h2>
               <FormTarefa
+                categorias={categorias}
+                tarefaSelecionada={tarefaSelecionada}
                 user={user}
                 requisidor={requisidor}
                 setTarefas={setTarefas}

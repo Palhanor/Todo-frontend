@@ -32,7 +32,10 @@ export default function Ferramentas() {
   };
 
   return (
-    <span className={style.icone}>
+    <span
+    title="Configurações"
+    aria-label="Configurações"
+    className={style.icone}>
       <FiSettings size={16} onClick={abrirFecharConfiguracaoUsuario} />
       {ferramentas && (
         <div className={style.container}>

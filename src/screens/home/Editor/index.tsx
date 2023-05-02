@@ -1,9 +1,9 @@
 import { GrFormClose } from "react-icons/gr";
-import { BsTrash3 } from "react-icons/bs";
 import Tarefa from "../../../interfaces/tarefa";
 import { EditorProps } from "../../../interfaces/props";
 import { tarefaDefault } from "../../../utils/modelos";
 import { useEffect, useState } from "react";
+import { BiTrash } from "react-icons/bi";
 
 export default function Editor({
   setTarefas,
@@ -17,12 +17,12 @@ export default function Editor({
   categorias,
   colEdicao,
 }: EditorProps) {
-  const [selectCategoria, setSelectCategoria] = useState(
-    tarefaSelecionada.categoria || ""
+  const [selectCategoria, setSelectCategoria] = useState<number>(
+    tarefaSelecionada.categoria || 0
   );
 
   useEffect(() => {
-    setSelectCategoria(() => tarefaSelecionada.categoria || "");
+    setSelectCategoria(() => tarefaSelecionada.categoria || 0);
   }, [tarefaSelecionada]);
 
   const excluirTarefa = async (id: number) => {
@@ -101,16 +101,18 @@ export default function Editor({
 
   const style = {
     barraDireita: `bg-[#fcfeff] h-screen p-4 pt-3 box-border`,
-    campoSuperior: "flex justify-between items-center my-3",
-    fechar: "cursor-pointer",
+    campoSuperior: "flex items-center gap-3 mt-3 mb-5",
+    fechar: "cursor-pointer rounded-full bg-[#7FD287] p-1",
+    apagar: "cursor-pointer rounded-full bg-[#EC6E6E] p-1.5",
+    ferramentas: "bg-[#e2e9f0] flex items-center rounded-md mb-4",
+    data: "grow p-3 bg-transparent border border-solid border-r-gray-300 rounded-l-md outline-none cursor-pointer text-base text-gray-700",
     selecaoCategoria:
-      "p-3 border-none bg-[#e2e9f0] outline-none rounded-md coursor-pointer",
+      "grow p-3 border-none bg-transparent outline-none cursor-pointer text-gray-700 text-base coursor-pointer",
     campoInferior: "w-full",
     tituloData: "flex",
-    titulo: "grow py-1 bg-transparent border-none text-base outline-none",
-    data: "p-1 bg-transparent border-none outline-none cursor-pointer text-base text-gray-500",
+    titulo: "grow py-1 bg-transparent border-none text-xl outline-none",
     descricao:
-      "w-full h-[70vh] bg-transparent border-none outline-none text-gray-500 resize-none mt-3",
+      "w-full h-[70vh] bg-transparent border-none outline-none text-lg text-gray-700 resize-none mt-3",
     botao:
       "absolute bottom-8 right-8 cursor-pointer py-3 px-5 bg-[#e23936] border-none rounded-md flex items-center justify-center",
     ilustracao: "ml-2",
@@ -119,22 +121,52 @@ export default function Editor({
   return (
     <div
       className={style.barraDireita}
-      style={{
-        width: colEdicao,
-      }}
+      style={{ width: colEdicao }}
       onMouseUp={encerrarRedimensionamento}
       onMouseMove={continuarRedimensionamento}
     >
       <div className={style.campoSuperior}>
-        <span className={style.fechar} onClick={removerTarefaSelecionada}>
-          <GrFormClose size={32} />
+        <span
+          title="Fechar editor"
+          aria-label="Fechar editor"
+          className={style.fechar}
+          onClick={removerTarefaSelecionada}
+        >
+          <GrFormClose size={18} />
         </span>
+        <span
+          title="Apagar tarefa"
+          aria-label="Apagar tarefa"
+          className={style.apagar}
+          onClick={() =>
+            setExibindoModal(() => {
+              return {
+                visivel: true,
+                titulo: `Excluir tarefa: ${tarefaSelecionada.titulo}`,
+                descricao:
+                  "Após realizar esta operação não será mais possível recuperar a tarefa em questão. Você tem certeza que deseja excluí-la?",
+                confirmacao: disparaExclusaoTarefa,
+              };
+            })
+          }
+        >
+          <BiTrash size={16} />
+        </span>
+      </div>
+      <div className={style.ferramentas}>
+        <input
+          required
+          type="date"
+          value={tarefaSelecionada.data_final}
+          onChange={atualizarDataTarefaSelecionada}
+          className={style.data}
+        />
         <select
           value={selectCategoria}
           className={style.selecaoCategoria}
           onChange={atualiarCategoriaTarefaSelecionada}
         >
-          <option value="0">Sem categoria</option>
+          <option value={0}>Sem categoria</option>
           {categorias.map((categoria) => (
             <option key={categoria.id_categoria} value={categoria.id_categoria}>
               {categoria.nome_categoria}
@@ -152,41 +184,16 @@ export default function Editor({
             onChange={atualizarTituloTarefaSelecionada}
             className={style.titulo}
           />
-          <input
-            required
-            type="date"
-            value={tarefaSelecionada.data_final}
-            onChange={atualizarDataTarefaSelecionada}
-            className={style.data}
-          />
         </div>
         <textarea
           cols={30}
           rows={10}
+          placeholder="Escreva uma descrição desta tarefa aqui..."
           className={style.descricao}
           value={tarefaSelecionada.descricao}
           onChange={editarViewDescricaoTarefaSelecionada}
           onBlur={atualizarDescricaoTarefaSelecionada}
         ></textarea>
-        <div>
-          <button
-            type="submit"
-            className={style.botao}
-            onClick={() =>
-              setExibindoModal(() => {
-                return {
-                  visivel: true,
-                  titulo: `Excluir tarefa: ${tarefaSelecionada.titulo}`,
-                  descricao:
-                    "Após realizar esta operação não será mais possível recuperar a tarefa em questão. Você tem certeza que deseja excluí-la?",
-                  confirmacao: disparaExclusaoTarefa,
-                };
-              })
-            }
-          >
-            <BsTrash3 /> <span className={style.ilustracao}>Excluir</span>
-          </button>
-        </div>
       </div>
     </div>
   );

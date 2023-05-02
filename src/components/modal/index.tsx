@@ -1,15 +1,9 @@
-import { IModal } from "../../interfaces/modal";
+import { ModalProps } from "../../interfaces/props";
 import { modalDefault } from "../../utils/modelos";
 
-export default function Modal({
-  exibindoModal,
-  setExibindoModal,
-}: {
-  exibindoModal: IModal;
-  setExibindoModal: React.Dispatch<React.SetStateAction<IModal>>;
-}) {
+export default function Modal({ exibindoModal, setExibindoModal }: ModalProps) {
   return (
-    <div className="w-2/5 shadow-md py-14 px-14 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 rounded-xl bg-white/50 backdrop-blur border border-solid border-white/18">
+    <div className="w-2/5 shadow-md py-14 px-14 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 rounded-xl bg-white">
       <h2 className="text-center text-2xl font-bold mb-5">
         {exibindoModal.titulo}
       </h2>

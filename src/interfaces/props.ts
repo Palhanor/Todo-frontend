@@ -42,6 +42,8 @@ export interface TarefasProps {
 }
 
 export interface FormTarefaProps {
+    categorias: Categoria[];
+    tarefaSelecionada: Tarefa;
     user: Usuario;
     requisidor: (rota: string, metodo?: string, dados?: any) => Promise<any>;
     setTarefas: React.Dispatch<React.SetStateAction<Tarefa[]>>;
@@ -60,5 +62,10 @@ export interface CategoriaProps {
     ) => void;
     editarCategoria: (categoria: ICategoria) => Promise<void>;
     excluirCategoria: (id: number) => Promise<void>;
+    setExibindoModal: React.Dispatch<React.SetStateAction<IModal>>;
+}
+
+export interface ModalProps {
+    exibindoModal: IModal;
     setExibindoModal: React.Dispatch<React.SetStateAction<IModal>>;
 }

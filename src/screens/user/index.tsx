@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Usuario from "../../interfaces/usuario";
-import { userDefault } from "../../utils/modelos";
+import { modalDefault, userDefault } from "../../utils/modelos";
 import Loading from "../Loading";
 import { BsArrowLeft } from "react-icons/bs";
 import { FaRegUserCircle } from "react-icons/fa";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { CgDanger } from "react-icons/cg";
 import "./style.css";
+import { IModal } from "../../interfaces/modal";
+import Modal from "../../components/modal";
 
 export default function User() {
   const [usuario, setUsuario] = useState<Usuario>(userDefault);
@@ -21,6 +23,9 @@ export default function User() {
   type abasFerramentas = "conta" | "senha" | "avançado";
 
   const [visualizacao, setVisualizacao] = useState<abasFerramentas>("conta");
+
+  // Modal
+  const [exibindoModal, setExibindoModal] = useState<IModal>(modalDefault);
 
   const navigate = useNavigate();
 
@@ -94,6 +99,10 @@ export default function User() {
     }
   };
 
+  const dispararExcluirUsurio = () => {
+    apagarUsuario();
+  };
+
   const navegarParaHome = () => {
     navigate("/home");
   };
@@ -117,7 +126,7 @@ export default function User() {
   const handleNovaSenhaValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNovaSenha(() => e.target.value);
   };
-  
+
   const handleConfirmacaoSenhaValue = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -318,7 +327,17 @@ export default function User() {
                     type="submit"
                     className={style.botao("#e52727")}
                     style={{ backgroundColor: "#e52727" }}
-                    onClick={apagarUsuario}
+                    onClick={() =>
+                      setExibindoModal(() => {
+                        return {
+                          visivel: true,
+                          titulo: `Excluir usuário: ${usuario.nome}`,
+                          descricao:
+                            "Uma vez excluído o usuário, não será possível recuperá-lo. Você tem certeza que deseja realizar esta operação?",
+                          confirmacao: dispararExcluirUsurio,
+                        };
+                      })
+                    }
                   >
                     Excluir conta
                   </button>
@@ -326,6 +345,12 @@ export default function User() {
               </div>
             )}
           </div>
+          {exibindoModal.visivel && (
+            <Modal
+              exibindoModal={exibindoModal}
+              setExibindoModal={setExibindoModal}
+            />
+          )}
         </div>
       ) : (
         <Loading />

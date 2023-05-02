@@ -1,6 +1,6 @@
 /* width */
 .campo_tarefas::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
 }
 
 /* Track */
@@ -26,7 +26,7 @@
 
 /* width */
 .barra_lateral::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
 }
 
 /* Track */

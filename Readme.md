@@ -14,7 +14,7 @@
 - Adicinar outras opcoes de login (Google)
 - Adicionar um campo que pega o momento que a atividade recebeu o check
 - Adicionar campos de criação e modificação em todas as tabelas
-- Implementar lazy load nas tarefas que estão mais para o futuro
+- Implementar lazy load nas tarefas que estão mais para o futuro (atuais) ou passado (historico) - passar uma querie para a API
 
 ### Frontend
 
@@ -35,6 +35,8 @@
 - Criar sub tarefas dentro das tarefas
 - Drag and drop parar ajustar a ordem de tarefas
 - Drag and drop parar ajustar a ordem de categorias
+- Adicionar um sistema de relatório de sucesso diário, semanal, mensal e anual
+- Adicionar um campo de notas para adicionar uma impressão para os dias que passaram (consolidados), como um diário
 
 ### OUTROS
 

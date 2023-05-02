@@ -175,18 +175,24 @@ export default function Categorias({
         {mostrarFerramentas && (
           <div className={style.ferramentas}>
             <button
+              title="Selecionar todos"
+              aria-label="Selecionar todos"
               className={style.ferramentaCategoria}
               onClick={ativarTodasCategorias}
             >
               <BiCheckboxChecked size={22} />
             </button>
             <button
+              title="Desmarcar todos"
+              aria-label="Desmarcar todos"
               className={style.ferramentaCategoria}
               onClick={desativarTodasCategorias}
             >
               <BiCheckboxMinus size={22} />
             </button>
-            <span
+            <button
+              title="Adicionar categoria"
+              aria-label="Adicionar categoria"
               onClick={exibirCampoCriarCategoria}
               className={style.ferramentaCategoria}
             >
@@ -195,7 +201,7 @@ export default function Categorias({
               ) : (
                 <BiPlusCircle size={19} />
               )}
-            </span>
+            </button>
           </div>
         )}
       </div>

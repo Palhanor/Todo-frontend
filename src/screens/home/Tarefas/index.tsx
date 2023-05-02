@@ -59,66 +59,68 @@ export default function Tarefas({
         <li key={dataTarefas[0]}>
           <details open={true} className={style.toggle}>
             <summary className={style.tituloData}>
-              {formatarDataPrincipal(dataTarefas[0])} &#8226; {dataTarefas[1].length}
+              {formatarDataPrincipal(dataTarefas[0])} &#8226;{" "}
+              {dataTarefas[1].length}
             </summary>
             <ul>
-              {tarefasRealizadasNoFinal(dataTarefas[1]).map((tarefa: Tarefa) => (
-                <li
-                  key={tarefa.id_tarefa}
-                  className={style.tarefa}
-                  style={{
-                    backgroundColor:
-                      tarefa.id_tarefa === tarefaSelecionada.id_tarefa
-                        ? "#ebeff5"
-                        : "transparent",
-                    borderLeft: `4px solid ${
-                      tarefa.categoria
-                        ? categorias.find(
-                            (categoria) =>
-                              categoria.id_categoria == tarefa.categoria
-                          )?.cor
-                        : "#f7f9fa"
-                    }`,
-                  }}
-                >
-                  <div>
-                    <input
-                      type="checkbox"
-                      id="tarefas"
-                      checked={!!tarefa.realizada}
-                      onChange={() => editarTarefa(tarefa, "check")}
-                      className={style.check}
-                    />
-                  </div>
-                  <div
-                    onClick={() => selecionarTarefaAbrirEditor(tarefa)}
-                    className={style.nomeContainer}
+              {tarefasRealizadasNoFinal(dataTarefas[1]).map(
+                (tarefa: Tarefa) => (
+                  <li
+                    key={tarefa.id_tarefa}
+                    className={style.tarefa}
+                    style={{
+                      backgroundColor:
+                        tarefa.id_tarefa === tarefaSelecionada.id_tarefa
+                          ? "#ebeff5"
+                          : "transparent",
+                      borderLeft: `4px solid ${
+                        tarefa.categoria
+                          ? categorias.find(
+                              (categoria) =>
+                                categoria.id_categoria == tarefa.categoria
+                            )?.cor
+                          : "#f7f9fa"
+                      }`,
+                    }}
                   >
-                    <h3
-                      className={
-                        style.nome +
-                        ` ${
-                          tarefa.realizada
-                            ? "line-through text-gray-500"
-                            : tarefa.data_final < pegarDataAtual()
-                            ? "text-red-700"
-                            : ""
-                        }`
-                      }
-                    >
-                      {tarefa.titulo}
-                    </h3>
-                    <div className={style.informacoes}>
-                      {tarefa.descricao && (
-                        <BsFileText size={16} color="#9ca3af" />
-                      )}
-                      <span className={style.data}>
-                        {formatarData(tarefa.data_final)}
-                      </span>
+                    <div>
+                      <input
+                        type="checkbox"
+                        checked={!!tarefa.realizada}
+                        onChange={() => editarTarefa(tarefa, "check")}
+                        className={style.check}
+                      />
                     </div>
-                  </div>
-                </li>
-              ))}
+                    <div
+                      onClick={() => selecionarTarefaAbrirEditor(tarefa)}
+                      className={style.nomeContainer}
+                    >
+                      <h3
+                        className={
+                          style.nome +
+                          ` ${
+                            tarefa.realizada
+                              ? "line-through text-gray-500"
+                              : tarefa.data_final < pegarDataAtual()
+                              ? "text-red-700"
+                              : ""
+                          }`
+                        }
+                      >
+                        {tarefa.titulo}
+                      </h3>
+                      <div className={style.informacoes}>
+                        {tarefa.descricao && (
+                          <BsFileText size={16} color="#9ca3af" />
+                        )}
+                        <span className={style.data}>
+                          {formatarData(tarefa.data_final)}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                )
+              )}
             </ul>
           </details>
         </li>
