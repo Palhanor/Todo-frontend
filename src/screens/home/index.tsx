@@ -1,17 +1,19 @@
-// TODO: Adicionar a visualização de quantidade de tarefas de cada categoria
+// TODO: Ajeitar o sisetma de criação de categorias
+// TODO: Ajeitar a estrutura do campo de edição de tarefas
+// TODO: Adicionar o sistema de modal para exclusão dentro da área de usuário
 // TODO: Tirar o JWT do localStorage para os cookies (evitar XSS)
 // TODO: Implementar o Redux para a gestão dos estados
 // TODO: Implementar o Axios para as requisições da API
+
+// TODO: Desenvolver a landing page
+// TODO: Fazer os ajustes de responsividade no sistema
 
 // TODO: Adicionar o campo de categorias na area de tarefas sendo criadas
 // TODO: Adicionar o sistema de prioridade das tarefas
 // TODO: Adicionar o sistema de tarefas excluidas
 // TODO: Criar sistema de tarefas perdidas
 
-// TODO: Desenvolver a landing page
-// TODO: Fazer os ajustes de responsividade no sistema
 // TODO: Criar sistema de ajuste das visualizações dentro das configurações de usuário (hoje, futuras, atrasadas, historico [perdidas e realizadas], excluídas)
-
 // TODO: Salvar dados no local storage (visualizacoes, largura das barras laterais, details abertos...)
 // TODO: Fazer o tratamento dos erros no front-end antes de enviar os dados
 // TODO: Receber os erros do backend e exibir de uma forma melhorada
@@ -23,15 +25,17 @@ import Categorias from "./Categorias";
 import Tarefas from "./Tarefas";
 import FormTarefa from "./FormTarefa";
 import Ferramentas from "./Ferramentas";
-import { tarefaDefault, userDefault } from "../../utils/modelos";
+import Loading from "../Loading";
+import { modalDefault, tarefaDefault, userDefault } from "../../utils/modelos";
 import Tarefa from "../../interfaces/tarefa";
 import Usuario from "../../interfaces/usuario";
 import { abas, edicaoTarefa } from "../../interfaces/types";
 import Categoria from "../../interfaces/categoria";
-import "./style.css";
 import { filtrarTarefasCategoriasAbas } from "../../utils/tarefas";
 import { GrFormClose } from "react-icons/gr";
-import Loading from "../Loading";
+import "./style.css";
+import Modal from "../../components/modal";
+import { IModal } from "../../interfaces/modal";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -60,6 +64,9 @@ export default function Home() {
   // Filtros
   const [filtroTexto, setFiltroTexto] = useState<string>("");
   const [filtroData, setFiltroData] = useState<string>("");
+
+  // Modal
+  const [exibindoModal, setExibindoModal] = useState<IModal>(modalDefault);
 
   // ESTRUTURA DAS REQUISIÇÕES
   const requisidor = async (rota: string, metodo?: string, dados?: any) => {
@@ -275,8 +282,7 @@ export default function Home() {
     listaSecao: "list-none",
     visualizacao:
       "flex justify-between px-3 py-2 w-full box-border text-normal cursor-pointer mb-2 rounded-md capitalize",
-    central:
-      `campo_tarefas grow px-5 pb-5 h-screen overflow-y-scroll box-border bg-[#f7f9fa]`,
+    central: `campo_tarefas grow px-5 pb-5 h-screen overflow-y-scroll box-border bg-[#f7f9fa]`,
     titulo: "text-lg mt-5 mb-4 font-semibold",
     redimensionador: (cor: string) =>
       `bg-[${cor}] w-1 h-screen cursor-col-resize`,
@@ -353,12 +359,14 @@ export default function Home() {
                   </div>
                 </div>
                 <Categorias
+                  tarefas={tarefas}
                   categorias={categorias}
                   categoriasAtivas={categoriasAtivas}
                   setCategoriasAtivas={setCategoriasAtivas}
                   requisidor={requisidor}
                   setCategorias={setCategorias}
                   setTarefas={setTarefas}
+                  setExibindoModal={setExibindoModal}
                 />
               </div>
             </div>
@@ -413,11 +421,18 @@ export default function Home() {
                 editarTarefa={editarTarefa}
                 encerrarRedimensionamento={encerrarRedimensionamento}
                 continuarRedimensionamento={continuarRedimensionamento}
+                setExibindoModal={setExibindoModal}
                 tarefaSelecionada={tarefaSelecionada}
                 categorias={categorias}
                 colEdicao={colEdicao}
               />
             </>
+          )}
+          {exibindoModal.visivel && (
+            <Modal
+              exibindoModal={exibindoModal}
+              setExibindoModal={setExibindoModal}
+            />
           )}
         </div>
       ) : (

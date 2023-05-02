@@ -55,14 +55,14 @@ export default function Tarefas({
         categoriasAtivas,
         filtroTexto,
         filtroData
-      ).map((val: any) => (
-        <li key={val[0]}>
+      ).map((dataTarefas: any) => (
+        <li key={dataTarefas[0]}>
           <details open={true} className={style.toggle}>
             <summary className={style.tituloData}>
-              {formatarDataPrincipal(val[0])} &#8226; {val[1].length}
+              {formatarDataPrincipal(dataTarefas[0])} &#8226; {dataTarefas[1].length}
             </summary>
             <ul>
-              {tarefasRealizadasNoFinal(val[1]).map((tarefa: Tarefa) => (
+              {tarefasRealizadasNoFinal(dataTarefas[1]).map((tarefa: Tarefa) => (
                 <li
                   key={tarefa.id_tarefa}
                   className={style.tarefa}

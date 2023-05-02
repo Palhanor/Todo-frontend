@@ -1,4 +1,5 @@
 import Categoria from "../interfaces/categoria";
+import { IModal } from "../interfaces/modal";
 import Tarefa from "../interfaces/tarefa";
 import Usuario from "../interfaces/usuario";
 
@@ -22,3 +23,10 @@ export const categoriaDefault: Categoria = {
     nome_categoria: "",
     cor: "#FFFFFF",
 };
+
+export const modalDefault: IModal = {
+    visivel: false,
+    titulo: "",
+    descricao: "",
+    confirmacao: () => { },
+}

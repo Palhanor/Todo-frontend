@@ -1,12 +1,14 @@
 import { AiFillEdit } from "react-icons/ai";
 import { GrFormClose } from "react-icons/gr";
-import ICategoria from "../../../../interfaces/categoria";
 import { useEffect, useState } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { BsCheck } from "react-icons/bs";
+import Tarefa from "../../../../interfaces/tarefa";
+import { CategoriaProps } from "../../../../interfaces/props";
 import "../style.css";
 
 export default function Categoria({
+  tarefas,
   categoria,
   categoriasAtivas,
   edicaoCategoria,
@@ -14,18 +16,8 @@ export default function Categoria({
   controlarEdicaoCategoria,
   editarCategoria,
   excluirCategoria,
-}: {
-  categoria: ICategoria;
-  categoriasAtivas: number[];
-  selecionarCategoria: (categoria: number) => void;
-  edicaoCategoria: ICategoria;
-  controlarEdicaoCategoria: (
-    e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
-    categoria: ICategoria
-  ) => void;
-  editarCategoria: (categoria: ICategoria) => Promise<void>;
-  excluirCategoria: (id: number) => Promise<void>;
-}) {
+  setExibindoModal,
+}: CategoriaProps) {
   const [exibindoEdicao, setExibindoEdicao] = useState<boolean>(false);
   const [nomeEdicaoCategoria, setNomeEdicaoCategoria] = useState<string>("");
   const [corEdicaoCategoria, setCorEdicaoCategoria] = useState<string>("");
@@ -49,6 +41,11 @@ export default function Categoria({
   const dispararExclusaoCategoria = () => {
     const id_categoria = edicaoCategoria.id_categoria;
     excluirCategoria(id_categoria);
+  };
+
+  const quantidadeTarefasCategoria = (id_categoria: number) => {
+    return tarefas.filter((tarefa: Tarefa) => tarefa.categoria == id_categoria)
+      .length;
   };
 
   const style = {
@@ -110,7 +107,7 @@ export default function Categoria({
               : "Sem categoria"}
           </h4>
         )}
-        {!!categoria.id_categoria && exibindoEdicao && (
+        {!!categoria.id_categoria && exibindoEdicao ? (
           <span>
             {edicaoCategoria.id_categoria != categoria.id_categoria ? (
               <span onClick={(e) => controlarEdicaoCategoria(e, categoria)}>
@@ -124,12 +121,26 @@ export default function Categoria({
                 <span onClick={(e) => controlarEdicaoCategoria(e, categoria)}>
                   <GrFormClose size={20} />
                 </span>
-                <span onClick={dispararExclusaoCategoria}>
+                <span
+                  onClick={() =>
+                    setExibindoModal(() => {
+                      return {
+                        visivel: true,
+                        titulo: `Excluir categoria: ${categoria.nome_categoria}`,
+                        descricao:
+                          "Esta ação não poderá ser revertida após realizada. Você tem certeza que deseja ecluir esta categoria?",
+                        confirmacao: dispararExclusaoCategoria,
+                      };
+                    })
+                  }
+                >
                   <FiTrash2 size={16} />
                 </span>
               </div>
             )}
           </span>
+        ) : (
+          <span>{quantidadeTarefasCategoria(categoria.id_categoria)}</span>
         )}
       </div>
     </li>

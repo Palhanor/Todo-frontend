@@ -12,19 +12,20 @@ import "./style.css";
 import Categoria from "./Categoria";
 
 export default function Categorias({
+  tarefas,
   categorias,
   categoriasAtivas,
   setCategoriasAtivas,
   requisidor,
   setCategorias,
   setTarefas,
+  setExibindoModal,
 }: CategoriasProps) {
   const [novaCategoria, setNovaCategoria] = useState(false);
   const [edicaoCategoria, setEdicaoCategoria] =
     useState<ICategoria>(categoriaDefault);
   const [nomeNovaCategoria, setNomeNovaCategoria] = useState("");
   const [corNovaCategoria, setCorNovaCategoria] = useState("#86a5c3");
-
   const [mostrarFerramentas, setMostrarFerramentas] = useState<boolean>(false);
 
   const selecionarCategoria = (categoria: number) => {
@@ -231,7 +232,8 @@ export default function Categorias({
       )}
       <ul className={style.listaCategorias}>
         <Categoria
-          key={0}
+          key={categoriaDefault.id_categoria}
+          tarefas={tarefas}
           categoria={categoriaDefault}
           categoriasAtivas={categoriasAtivas}
           edicaoCategoria={edicaoCategoria}
@@ -239,10 +241,12 @@ export default function Categorias({
           controlarEdicaoCategoria={controlarEdicaoCategoria}
           excluirCategoria={excluirCategoria}
           editarCategoria={editarCategoria}
+          setExibindoModal={setExibindoModal}
         />
         {categorias.map((categoria) => (
           <Categoria
             key={categoria.id_categoria}
+            tarefas={tarefas}
             categoria={categoria}
             categoriasAtivas={categoriasAtivas}
             edicaoCategoria={edicaoCategoria}
@@ -250,6 +254,7 @@ export default function Categorias({
             controlarEdicaoCategoria={controlarEdicaoCategoria}
             excluirCategoria={excluirCategoria}
             editarCategoria={editarCategoria}
+            setExibindoModal={setExibindoModal}
           />
         ))}
       </ul>

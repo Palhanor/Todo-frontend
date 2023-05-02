@@ -12,6 +12,7 @@ export default function Editor({
   editarTarefa,
   encerrarRedimensionamento,
   continuarRedimensionamento,
+  setExibindoModal,
   tarefaSelecionada,
   categorias,
   colEdicao,
@@ -38,6 +39,11 @@ export default function Editor({
     } else {
       alert(retorno.result);
     }
+  };
+
+  const disparaExclusaoTarefa = () => {
+    const id_tarefa = tarefaSelecionada.id_tarefa;
+    excluirTarefa(id_tarefa);
   };
 
   const removerTarefaSelecionada = () => {
@@ -166,7 +172,17 @@ export default function Editor({
           <button
             type="submit"
             className={style.botao}
-            onClick={() => excluirTarefa(tarefaSelecionada.id_tarefa)}
+            onClick={() =>
+              setExibindoModal(() => {
+                return {
+                  visivel: true,
+                  titulo: `Excluir tarefa: ${tarefaSelecionada.titulo}`,
+                  descricao:
+                    "Após realizar esta operação não será mais possível recuperar a tarefa em questão. Você tem certeza que deseja excluí-la?",
+                  confirmacao: disparaExclusaoTarefa,
+                };
+              })
+            }
           >
             <BsTrash3 /> <span className={style.ilustracao}>Excluir</span>
           </button>
