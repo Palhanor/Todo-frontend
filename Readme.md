@@ -1,12 +1,3 @@
-## DATA E HORA
-
-- Permitir tarefa sem data - colocar um x para resetar o state e data_final deve ser NULL
-- Modificar o nome da tabela para data_realizaco
-- Jogar tarefas sem data em uma visualização distinta (desmarcada)
-- Permitir adicionar as horas - mudar database (datetime), inputs (datetime-local) e tratamento de data no sistema
-
-## AVANÇADOS
-
 ### Backend
 
 - Fazer CRUD de tarefas usando Models com Sequelize, ORM ou Prisma
@@ -23,10 +14,23 @@
 - Fazer validacao de dados (senha)
 - Utilizar o Axios para fazer as conexões com a API do sistema
 - Filtro por intervalo de dias - precisa de uma nova interface de selecão
+- Tirar o JWT do localStorage para os cookies (evitar XSS)
 
 ### Ferramentas
 
+- Lembretes seriam tarefas sem data (apagada quando dão check mas tarefas normais caso recebam data)
+- Lembretes devem ir para uma visualização propria chamada de lembretes
+- Fazer atualizações automaticamente (quando virar o dia já atualizar as tarefas)
+- Permitir reajustar a ordem das categorias e ordenar as tarefas de acordo com a ordem das categorias (foras tarefas realizadas por ordem de realização e tarefas importantes que vão para cima)
+- Ordenar as tarefas realizadas de acordo com a ordem de realização (timestamp)
+- Criar um sistema de lembrete, onde uma tarefa marcada como nota é apagada quando leva check
+- Adicionar uma visualização de matedados da tarefas - numero de tentativas, quantidade de tempo focado (pomodoro), criação, modificação, check...
 - Criar um sistema de metas de longo prazo (pode vincular as tarefas às metas)
+- Adicionar notas para os dias que passaram, como uma impressão do dia
+- Permitir criar planos anuais, mensais ou semanais, e vincular as tarefas a esses planos
+- Permitir o compartilhamento de tarefas (apenas ler ou apenas editar)
+- Permitir a criação de workplaces para que todas as tarefas marcadas com esse workplace sejam compartilhadas entre as pessoas que estão dentro do workplace em questão
+- Adicionar um review geral dos dias, semanas, meses, trimestres e anos (taxa de sucesso, numero de tentativas e afins)
 - Otimizar o sistema de atualização automática na edição das notas (titulo e descrição)
 - Configurações de usuário: permitir apagar todas as tarefas de uma categoria
 - Permitir que um usuário veja ou edite as tarefas do outro - Compartilhar tarefa, categorias ou tudo...
@@ -46,6 +50,9 @@ Atrsadas
 Realiadas
 Perdidas
 Historico (realizadas e perdidas)
+
+Lembretes
+Rotinas
 
 Excluidas
 // Adicionar sistema de tarefas excluidas

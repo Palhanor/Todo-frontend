@@ -25,11 +25,13 @@ export default function FormTarefa({
   const inserirTarefa = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const categoria = selectCategoria ? selectCategoria : null;
     const dados = {
       usuario: user.id_usuario,
       titulo: titulo,
       descricao: descricao,
       dataFinal: dataFinal,
+      categoria: categoria,
     };
     const retorno = await requisidor("tasks", "POST", dados);
 
