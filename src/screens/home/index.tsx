@@ -1,7 +1,6 @@
 // cd .\client\doitask\
 // cd .\server\
 
-// TODO: Salvar dados no local storage (largura das barras laterais)
 // TODO: Adicionar o sistema de tarefas excluidas
 // TODO: Adicionar um sistema de pomodoro dentro de cada tarefa separadamente (stateless)
 // TODO: Ao marcar uma atividade futura como feita ele deve tirar a atividade do futuro e jogar no dia como feita
@@ -70,8 +69,8 @@ export default function Home() {
 
   // Dimensões das barras laterais
   const larguraTela = window.innerWidth;
-  const [colFerramentas, setColFerramentas] = useState<number>(larguraTela / 4);
-  const [colEdicao, setColEdicao] = useState<number>(larguraTela / 4);
+  const [colFerramentas, setColFerramentas] = useState<number>(Number(localStorage.getItem("colEsq")) || larguraTela / 4);
+  const [colEdicao, setColEdicao] = useState<number>(Number(localStorage.getItem("colDir")) || larguraTela / 4);
   const [redimensionandoFerramentas, setRedimensionandoFerramentas] =
     useState<boolean>(false);
   const [redimensionandoEdicao, setRedimensionandoEdicao] =
@@ -258,6 +257,7 @@ export default function Home() {
       if (e.clientX <= larguraTela / 5) novaLargura = larguraTela / 5;
       else if (e.clientX >= larguraTela / 3) novaLargura = larguraTela / 3;
       else novaLargura = e.clientX;
+      localStorage.setItem("colEsq", String(novaLargura))
       setColFerramentas(() => novaLargura);
     }
   };
@@ -271,6 +271,7 @@ export default function Home() {
       if (tamanho <= larguraTela / 5) novaLargura = larguraTela / 5;
       else if (tamanho >= larguraTela / 2.5) novaLargura = larguraTela / 2.5;
       else novaLargura = tamanho;
+      localStorage.setItem("colDir", String(novaLargura))
       setColEdicao(() => novaLargura);
     }
   };

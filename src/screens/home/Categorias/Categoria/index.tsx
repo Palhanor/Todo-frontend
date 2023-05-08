@@ -94,7 +94,7 @@ export default function Categoria({
               onChange={(e) => setCorEdicaoCategoria(() => e.target.value)}
             />
             <input
-              className="border border-solid border-black outline-none rounded-md p-1 mx-3 w-4/6"
+              className="outline-none rounded-md p-1 mx-3 w-4/6"
               style={{ backgroundColor: categoria.cor }}
               type="text"
               value={nomeEdicaoCategoria}

@@ -2,14 +2,16 @@ import { useState } from "react";
 import ICategoria from "../../../interfaces/categoria";
 import { CategoriasProps } from "../../../interfaces/props";
 import { categoriaDefault } from "../../../utils/modelos";
+import "./style.css";
+import Categoria from "./Categoria";
+import { BsCheck } from "react-icons/bs";
+import { GrFormClose } from "react-icons/gr";
 import {
   BiPlusCircle,
   BiMinusCircle,
   BiCheckboxMinus,
   BiCheckboxChecked,
 } from "react-icons/bi";
-import "./style.css";
-import Categoria from "./Categoria";
 
 export default function Categorias({
   tarefas,
@@ -25,7 +27,7 @@ export default function Categorias({
   const [edicaoCategoria, setEdicaoCategoria] =
     useState<ICategoria>(categoriaDefault);
   const [nomeNovaCategoria, setNomeNovaCategoria] = useState("");
-  const [corNovaCategoria, setCorNovaCategoria] = useState("#86a5c3");
+  const [corNovaCategoria, setCorNovaCategoria] = useState("#e2e9f0");
   const [mostrarFerramentas, setMostrarFerramentas] = useState<boolean>(false);
 
   const selecionarCategoria = (categoria: number) => {
@@ -58,7 +60,8 @@ export default function Categorias({
       ]);
       setCategoriasAtivas((prev) => [...prev, novaCategoria.id_categoria]);
       setNomeNovaCategoria(() => "");
-      setCorNovaCategoria(() => "#86a5c3");
+      setCorNovaCategoria(() => "#e2e9f0");
+      exibirCampoCriarCategoria()
     } else {
       alert(retorno.result);
     }
@@ -172,70 +175,78 @@ export default function Categorias({
         onMouseLeave={ocultarFerramentasCategoria}
       >
         <h2 className={style.tituloSecao}>Categorias</h2>
-        {mostrarFerramentas && (
-          <div className={style.ferramentas}>
-            <button
-              title="Selecionar todos"
-              aria-label="Selecionar todos"
-              className={style.ferramentaCategoria}
-              onClick={ativarTodasCategorias}
-            >
-              <BiCheckboxChecked size={22} />
-            </button>
-            <button
-              title="Desmarcar todos"
-              aria-label="Desmarcar todos"
-              className={style.ferramentaCategoria}
-              onClick={desativarTodasCategorias}
-            >
-              <BiCheckboxMinus size={22} />
-            </button>
-            <button
-              title="Adicionar categoria"
-              aria-label="Adicionar categoria"
-              onClick={exibirCampoCriarCategoria}
-              className={style.ferramentaCategoria}
-            >
-              {novaCategoria ? (
-                <BiMinusCircle size={19} />
-              ) : (
-                <BiPlusCircle size={19} />
-              )}
-            </button>
-          </div>
-        )}
+        {mostrarFerramentas &&
+          (
+            <div className={style.ferramentas}>
+              <button
+                title="Selecionar todos"
+                aria-label="Selecionar todos"
+                className={style.ferramentaCategoria}
+                onClick={ativarTodasCategorias}
+              >
+                <BiCheckboxChecked size={22} />
+              </button>
+              <button
+                title="Desmarcar todos"
+                aria-label="Desmarcar todos"
+                className={style.ferramentaCategoria}
+                onClick={desativarTodasCategorias}
+              >
+                <BiCheckboxMinus size={22} />
+              </button>
+              <button
+                title="Adicionar categoria"
+                aria-label="Adicionar categoria"
+                onClick={exibirCampoCriarCategoria}
+                className={style.ferramentaCategoria}
+              >
+                {novaCategoria ? (
+                  <BiMinusCircle size={19} />
+                ) : (
+                  <BiPlusCircle size={19} />
+                )}
+              </button>
+            </div>
+          )
+        }
       </div>
-      {novaCategoria && (
-        <div className={style.edicaoCriacaoContainer}>
-          <div className={style.nomeCorContainer}>
+      {novaCategoria &&
+        <div className="p-0.5 pl-2 w-full box-border text-base cursor-pointer mb-3 rounded-md capitalize border border-solid border-black">
+          <div className="flex justify-between items-center p-3 rounded-md">
             <input
-              type="text"
-              placeholder="Nome da categoria"
-              value={nomeNovaCategoria}
-              onChange={handleNomeCategoriaValue}
-              className={style.inputNome}
-            />
-            <input
+              className="inputCor border border-solid border-black rounded-md"
               type="color"
-              className="inputCor"
               value={corNovaCategoria}
               onChange={handleCorCategoriaValue}
             />
-          </div>
-          <div className={style.botaoContainer}>
-            {novaCategoria && (
-              <button
-                type="submit"
-                className={style.botao("#419E31")}
-                style={{ backgroundColor: "#419E31" }}
-                onClick={inserirCategoria}
-              >
-                Adicionar
-              </button>
-            )}
+            <input
+              className="outline-none rounded-md p-1 mx-3 w-4/6 bg-transparent"
+              placeholder="Nova categoria"
+              type="text"
+              value={nomeNovaCategoria}
+              onChange={handleNomeCategoriaValue}
+            />
+            <span>
+              <div className="flex gap-2 items-center">
+                <span
+                  title="Confirmar edição"
+                  aria-label="Confirmar edição"
+                  onClick={inserirCategoria}
+                >
+                  <BsCheck size={20} />
+                </span>
+                <span
+                  title="Cancelar edição"
+                  aria-label="Cancelar edição"
+                  onClick={exibirCampoCriarCategoria}
+                >
+                  <GrFormClose size={20} />
+                </span>
+              </div>
+            </span>
           </div>
         </div>
-      )}
+      }
       <ul className={style.listaCategorias}>
         <Categoria
           key={categoriaDefault.id_categoria}

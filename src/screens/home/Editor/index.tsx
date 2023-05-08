@@ -114,10 +114,10 @@ export default function Editor({
   };
 
   const style = {
-    barraDireita: `bg-[#fcfeff] h-screen p-4 pt-3 box-border`,
+    barraDireita: `bg-[#fcfeff] h-screen p-4 pt-3 box-border relative`,
     campoSuperior: "flex items-center gap-3 mt-3 mb-5",
-    fechar: "cursor-pointer rounded-full bg-[#7FD287] p-1",
-    apagar: "cursor-pointer rounded-full bg-[#EC6E6E] p-1.5",
+    fechar: "cursor-pointer rounded-md bg-[#e2e9f0] p-2",
+    apagar: "cursor-pointer rounded-md p-3 bg-transparent hover:bg-[#EC6E6E]",
     ferramentas: "bg-[#e2e9f0] flex items-center rounded-md mb-4",
     data: "grow p-3 bg-transparent border border-solid border-r-gray-300 rounded-l-md outline-none cursor-pointer text-base text-gray-700",
     selecaoCategoria:
@@ -126,7 +126,7 @@ export default function Editor({
     tituloData: "flex",
     titulo: "grow py-1 bg-transparent border-none text-xl outline-none",
     descricao:
-      "w-full h-[70vh] bg-transparent border-none outline-none text-lg text-gray-700 resize-none mt-3",
+      "w-full h-[65vh] bg-transparent border-none outline-none text-lg text-gray-700 resize-none mt-3",
     botao:
       "absolute bottom-8 right-8 cursor-pointer py-3 px-5 bg-[#e23936] border-none rounded-md flex items-center justify-center",
     ilustracao: "ml-2",
@@ -147,24 +147,6 @@ export default function Editor({
           onClick={removerTarefaSelecionada}
         >
           <GrFormClose size={18} />
-        </span>
-        <span
-          title="Apagar tarefa"
-          aria-label="Apagar tarefa"
-          className={style.apagar}
-          onClick={() =>
-            setExibindoModal(() => {
-              return {
-                visivel: true,
-                titulo: `Excluir tarefa: ${tarefaSelecionada.titulo}`,
-                descricao:
-                  "Após realizar esta operação não será mais possível recuperar a tarefa em questão. Você tem certeza que deseja excluí-la?",
-                confirmacao: disparaExclusaoTarefa,
-              };
-            })
-          }
-        >
-          <BiTrash size={16} />
         </span>
       </div>
       <div className={style.ferramentas}>
@@ -211,6 +193,26 @@ export default function Editor({
           onChange={editarViewDescricaoTarefaSelecionada}
           onBlur={atualizarDescricaoTarefaSelecionada}
         ></textarea>
+      </div>
+      <div className="flex items-center gap-3 justify-end bg-[#e2e9f0] p-2 absolute bottom-7 left-4 right-4 rounded-md box-border">
+        <button
+          title="Apagar tarefa"
+          aria-label="Apagar tarefa"
+          className={style.apagar}
+          onClick={() =>
+            setExibindoModal(() => {
+              return {
+                visivel: true,
+                titulo: `Excluir tarefa: ${tarefaSelecionada.titulo}`,
+                descricao:
+                  "Após realizar esta operação não será mais possível recuperar a tarefa em questão. Você tem certeza que deseja excluí-la?",
+                confirmacao: disparaExclusaoTarefa,
+              };
+            })
+          }
+        >
+          <BiTrash size={18} />
+        </button>
       </div>
     </div>
   );
