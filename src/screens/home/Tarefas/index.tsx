@@ -2,12 +2,13 @@ import { BsFileText } from "react-icons/bs";
 import { filtrarTarefas } from "../../../utils/tarefas";
 import { TarefasProps } from "../../../interfaces/props";
 import Tarefa from "../../../interfaces/tarefa";
+import { tarefaDefault } from "../../../utils/modelos";
+import { FaExclamation } from "react-icons/fa";
 import {
   formatarData,
   formatarDataPrincipal,
   pegarDataAtual,
 } from "../../../utils/datas";
-import { tarefaDefault } from "../../../utils/modelos";
 
 export default function Tarefas({
   tarefas,
@@ -17,13 +18,23 @@ export default function Tarefas({
   tarefaSelecionada,
   filtroTexto,
   filtroData,
+  filtroPrioridade,
   editarTarefa,
   setTarefaSelecionada,
 }: TarefasProps) {
+
   const tarefasRealizadasNoFinal = (listaTarefas: Tarefa[]) => {
-    return listaTarefas.sort((a: Tarefa, b: Tarefa) =>
-      a.realizada > b.realizada ? 1 : -1
+    const tarefasRealizadas = listaTarefas.filter(tarefa => tarefa.realizada == 1)
+    const tarefasPendentes = listaTarefas.filter(tarefa => tarefa.realizada == 0)
+
+    const tarefasRealizadasOrdenadas = tarefasRealizadas.sort((a: Tarefa, b: Tarefa) =>
+      a.prioridade < b.prioridade ? 1 : -1
     );
+    const tarefasPendentesOrdenadas = tarefasPendentes.sort((a: Tarefa, b: Tarefa) =>
+      a.prioridade < b.prioridade ? 1 : -1
+    );
+
+    return [...tarefasPendentesOrdenadas, ...tarefasRealizadasOrdenadas]
   };
 
   const selecionarTarefaAbrirEditor = (tarefa: Tarefa) => {
@@ -43,8 +54,8 @@ export default function Tarefas({
     nomeContainer:
       "flex items-center justify-between grow p-4 pl-0 border-b border-solid border-gray-300",
     nome: "inline-block text-base mx-3 font-normal",
-    informacoes: "flex items-center",
-    data: "text-sm text-gray-400 ml-3",
+    informacoes: "flex items-center gap-2",
+    data: "text-sm text-gray-400",
   };
 
   return (
@@ -54,7 +65,8 @@ export default function Tarefas({
         abaTarefas,
         categoriasAtivas,
         filtroTexto,
-        filtroData
+        filtroData,
+        filtroPrioridade
       ).map((dataTarefas: any) => (
         <li key={dataTarefas[0]}>
           <details open={true} className={style.toggle}>
@@ -73,14 +85,13 @@ export default function Tarefas({
                         tarefa.id_tarefa === tarefaSelecionada.id_tarefa
                           ? "#ebeff5"
                           : "transparent",
-                      borderLeft: `4px solid ${
-                        tarefa.categoria
-                          ? categorias.find(
-                              (categoria) =>
-                                categoria.id_categoria == tarefa.categoria
-                            )?.cor
-                          : "#f7f9fa"
-                      }`,
+                      borderLeft: `4px solid ${tarefa.categoria
+                        ? categorias.find(
+                          (categoria) =>
+                            categoria.id_categoria == tarefa.categoria
+                        )?.cor
+                        : "#f7f9fa"
+                        }`,
                     }}
                   >
                     <div>
@@ -98,10 +109,9 @@ export default function Tarefas({
                       <h3
                         className={
                           style.nome +
-                          ` ${
-                            tarefa.realizada
-                              ? "line-through text-gray-500"
-                              : tarefa.data_final < pegarDataAtual()
+                          ` ${tarefa.realizada
+                            ? "line-through text-gray-500"
+                            : tarefa.data_final < pegarDataAtual()
                               ? "text-red-700"
                               : ""
                           }`
@@ -110,6 +120,9 @@ export default function Tarefas({
                         {tarefa.titulo}
                       </h3>
                       <div className={style.informacoes}>
+                        {!!tarefa.prioridade && (
+                          <FaExclamation size={12} color="#FF0000" />
+                        )}
                         {tarefa.descricao && (
                           <BsFileText size={16} color="#9ca3af" />
                         )}

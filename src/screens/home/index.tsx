@@ -1,28 +1,24 @@
-// TODO: Adicionar sistema de prioridade de tarefas (MySQL, NodeJS e React)
-//        Inserir na hora da criação
-//        Permitir a edição
-//        Adicionar um sistema de filtro
-// TODO: Ajeitar o sisetma de criação de categorias
-// TODO: Corrigir as ferramentas do campo de edição de tarefa
-// TODO: Salvar dados no local storage
-//        Largura das barras laterais
+// cd .\client\doitask\
+// cd .\server\
+
+// TODO: Salvar dados no local storage (largura das barras laterais)
 // TODO: Adicionar o sistema de tarefas excluidas
-// TODO: Inserir o campo de horas das tarefas (pode ser nulo) com input datetime-local
-// TODO: Tarefas para realizar ordenadas por hora e caso não tenha hora, por categoria... Tarefas realizadas ordenadas por hora de realização
+// TODO: Adicionar um sistema de pomodoro dentro de cada tarefa separadamente (stateless)
+// TODO: Ao marcar uma atividade futura como feita ele deve tirar a atividade do futuro e jogar no dia como feita
 
 // TODO: Implementar o Axios para as requisições da API
 // TODO: Implementar o Redux para a gestão dos estados
 // TODO: Implementar hooks personalizados para descoplamento do sistema
 
-// TODO: Adicionar um sistema de pomodoro dentro de cada tarefa separadamente (não precisa de nada no banco de dados)
+// TODO: Inserir o campo de horas das tarefas (pode ser nulo) com input datetime-local
+// TODO: Tarefas para realizar ordenadas por hora e caso não tenha hora, por categoria... Tarefas realizadas ordenadas por hora de realização
+// TODO: Adicionar as anotações sobre o dia dentro de cada dia consolidado
 // TODO: Criar sistema de tarefas perdidas
 //        Quando clica em check deve perguntar quando foi realizada: se no mesmo dia, fica como feita, senao, duplica como feita pra o dia que feoi feita e fica como perdida no dia que estava
 //        Quando remarca apenas cria uma copia em aberto para o dia e passa a mesma para perdida
 
-// TODO: Adicionar as anotações sobre o dia dentro de cada dia consolidado
 // TODO: Desenvolver a landing page de apresentaçaõ do sistema
 // TODO: Fazer os ajustes de responsividade no sistema (mobile)
-// TODO: Ao marcar uma atividade futura como feita ele deve tirar a atividade do futuro e jogar no dia como feita
 
 // TODO: Adicionar um sistema para permitir que o usuário faça anotações sobre o dia que se passou
 // TODO: Adicionar as novas visualizações (histórico [perdidas e realizadas], excuídas)
@@ -55,6 +51,7 @@ import { abas, edicaoTarefa } from "../../interfaces/types";
 import { GrFormClose } from "react-icons/gr";
 
 import "./style.css";
+import { FaExclamation } from "react-icons/fa";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -83,6 +80,7 @@ export default function Home() {
   // Filtros
   const [filtroTexto, setFiltroTexto] = useState<string>("");
   const [filtroData, setFiltroData] = useState<string>("");
+  const [filtroPrioridade, setFiltroPrioridade] = useState<boolean>(false);
 
   // Modal
   const [exibindoModal, setExibindoModal] = useState<IModal>(modalDefault);
@@ -160,6 +158,7 @@ export default function Home() {
       data_final: tarefa.data_final,
       categoria: tarefa.categoria,
       realizada: tipo == "check" ? +!tarefa.realizada : +tarefa.realizada,
+      prioridade: tipo == "prioridade" ? +!tarefa.prioridade : +tarefa.prioridade,
     };
     const retorno = await requisidor("tasks", "PUT", dados);
 
@@ -170,6 +169,8 @@ export default function Home() {
         editarTarefaDados(tarefa);
       } else if (tipo == "categoria") {
         editarTarefaCategoria(tarefa);
+      } else if (tipo == "prioridade") {
+        editarTarefaPrioridade(tarefa);
       }
     } else {
       alert(retorno.result);
@@ -210,6 +211,19 @@ export default function Home() {
     );
   };
 
+  const editarTarefaPrioridade = (tarefa: Tarefa) => {
+    setTarefas((current: Tarefa[]) =>
+      current.map((tarefaAtual: Tarefa) => {
+        if (tarefaAtual.id_tarefa == tarefa.id_tarefa)
+          return {
+            ...tarefaAtual,
+            prioridade: +!tarefa.prioridade,
+          };
+        else return tarefaAtual;
+      })
+    );
+  }
+
   // FERRAMENTAS GERAIS
   const pegarNumeroTarefasVisualizacao = (nome: abas) => {
     const listaTarefasFiltradas = filtrarTarefasCategoriasAbas(
@@ -217,7 +231,8 @@ export default function Home() {
       nome,
       categoriasAtivas,
       filtroTexto,
-      filtroData
+      filtroData,
+      filtroPrioridade
     );
     return listaTarefasFiltradas.length;
   };
@@ -365,6 +380,9 @@ export default function Home() {
                     </span>
                   </div>
                   <div className="flex">
+                    <div className="p-4 rounded-md bg-white mr-3 cursor-pointer" onClick={() => setFiltroPrioridade((prev) => !prev)}>
+                      <FaExclamation size={12} color={filtroPrioridade ? "#FF0000" : "#555"} />
+                    </div>
                     <input
                       type="date"
                       className="rounded-l-md w-full p-3 outline-none"
@@ -426,6 +444,7 @@ export default function Home() {
                 tarefaSelecionada={tarefaSelecionada}
                 filtroTexto={filtroTexto}
                 filtroData={filtroData}
+                filtroPrioridade={filtroPrioridade}
                 editarTarefa={editarTarefa}
                 setTarefaSelecionada={setTarefaSelecionada}
               />

@@ -37,6 +37,7 @@ export interface TarefasProps {
     tarefaSelecionada: Tarefa;
     filtroTexto: string;
     filtroData: string;
+    filtroPrioridade: boolean;
     editarTarefa: (tarefa: Tarefa, tipo: edicaoTarefa) => Promise<void>;
     setTarefaSelecionada: React.Dispatch<React.SetStateAction<Tarefa>>;
 }

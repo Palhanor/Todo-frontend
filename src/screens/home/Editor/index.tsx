@@ -4,6 +4,7 @@ import { EditorProps } from "../../../interfaces/props";
 import { tarefaDefault } from "../../../utils/modelos";
 import { useEffect, useState } from "react";
 import { BiTrash } from "react-icons/bi";
+import { FaExclamation } from "react-icons/fa";
 
 export default function Editor({
   setTarefas,
@@ -64,6 +65,19 @@ export default function Editor({
       "categoria"
     );
   };
+
+  const atualiarPrioridadeTarefaSelecionada = () => {
+    editarTarefa(
+      tarefaSelecionada,
+      "prioridade"
+    );
+    setTarefaSelecionada((anterior) => {
+      return {
+        ...anterior,
+        prioridade: +!anterior.prioridade
+      }
+    })
+  }
 
   const atualizarTituloTarefaSelecionada = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -173,6 +187,9 @@ export default function Editor({
             </option>
           ))}
         </select>
+        <div className="py-5 px-5 border border-solid border-l-gray-300 cursor-pointer rounded-r-md" onClick={atualiarPrioridadeTarefaSelecionada}>
+          <FaExclamation size={14} color={tarefaSelecionada.prioridade ? "#FF0000" : "#555"} />
+        </div>
       </div>
       <div className={style.campoInferior}>
         <div className={style.tituloData}>

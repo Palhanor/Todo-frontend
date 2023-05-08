@@ -5,6 +5,7 @@ export default interface Tarefa {
     data_final: string;
     categoria: number | null;
     realizada: number;
+    prioridade: number;
     // excluida: {
     //     data: number[];
     // };

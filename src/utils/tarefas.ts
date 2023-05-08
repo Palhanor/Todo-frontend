@@ -36,6 +36,7 @@ export const filtrarTarefasCategoriasAbas = (
     categoriasAtivas: number[],
     filtroTexto: string,
     filtroData: string,
+    filtroPrioridade: boolean
 ) => {
     const dataAtual = pegarDataAtual();
     return listaTarefas
@@ -48,7 +49,8 @@ export const filtrarTarefasCategoriasAbas = (
         .filter((tarefa: Tarefa) => {
             return (tarefa.titulo.toLowerCase().includes(filtroTexto.toLowerCase()) ||
                 tarefa.descricao.toLowerCase().includes(filtroTexto.toLowerCase())) &&
-                (tarefa.data_final == filtroData || filtroData == "")
+                (tarefa.data_final == filtroData || filtroData == "") &&
+                (tarefa.prioridade || !filtroPrioridade)
         })
         .filter((tarefa: Tarefa) => {
             const dataTarefa = pegarDataEspecifica(tarefa.data_final);
@@ -74,6 +76,7 @@ export const filtrarTarefas = (
     categoriasAtivas: number[],
     filtroTexto: string,
     filtroData: string,
+    filtroPrioridade: boolean
 ) => {
     const tarefasFiltradas = filtrarTarefasCategoriasAbas(
         listaTarefas,
@@ -81,6 +84,7 @@ export const filtrarTarefas = (
         categoriasAtivas,
         filtroTexto,
         filtroData,
+        filtroPrioridade
     );
     const tarefasOrdenadas = ordenarTarefas(tarefasFiltradas, abaAtiva);
     const tarefasAgrupadasEmDias = agruparTarefas(tarefasOrdenadas);

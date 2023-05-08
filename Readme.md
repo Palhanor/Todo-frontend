@@ -1,3 +1,6 @@
+- Versão mobile com React native
+- Versão desktop com Electron
+
 ### Backend
 
 - Fazer CRUD de tarefas usando Models com Sequelize, ORM ou Prisma

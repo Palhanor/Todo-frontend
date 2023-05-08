@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { pegarDataAtual } from "../../../utils/datas";
 import Tarefa from "../../../interfaces/tarefa";
 import { FormTarefaProps } from "../../../interfaces/props";
+import { FaExclamation } from "react-icons/fa";
 
 export default function FormTarefa({
   user,
@@ -18,6 +19,8 @@ export default function FormTarefa({
     tarefaSelecionada.categoria || 0
   );
 
+  const [prioridade, setPrioridade] = useState<boolean>(false);
+
   useEffect(() => {
     setDataFinal(() => pegarDataAtual());
   }, []);
@@ -32,6 +35,7 @@ export default function FormTarefa({
       descricao: descricao,
       dataFinal: dataFinal,
       categoria: categoria,
+      prioridade: prioridade ? 1 : 0,
     };
     const retorno = await requisidor("tasks", "POST", dados);
 
@@ -43,10 +47,12 @@ export default function FormTarefa({
         data_final: dataFinal,
         categoria: Number(selectCategoria),
         realizada: 0,
+        prioridade: Number(prioridade)
       };
       setTarefas((tarefasAntigas: Tarefa[]) => [...tarefasAntigas, novaTarefa]);
       setTarefaSelecionada(() => novaTarefa);
       setTitulo(() => "");
+      setPrioridade(() => false);
     } else {
       alert(retorno.result);
     }
@@ -110,6 +116,9 @@ export default function FormTarefa({
               </option>
             ))}
           </select>
+          <div className="py-5 px-5 border border-solid border-l-gray-300 cursor-pointer rounded-r-md" onClick={() => setPrioridade((prev) => !prev)}>
+            <FaExclamation size={14} color={prioridade ? "#FF0000" : "#555"} />
+          </div>
         </div>
         <button type="submit" className={style.botao}>
           Adicionar
