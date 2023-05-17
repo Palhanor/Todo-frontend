@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import api from "../../service/api";
 
 export default function Login() {
-  const [autenticado, setAutenticado] = useState(false);
+  const [naoAutenticado, setNaoAutenticado] = useState(false);
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
@@ -12,45 +13,36 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const tokenJWT = localStorage.getItem("auth") || "";
-    fetch("http://localhost:3001/auth", {
-      headers: {
-        "x-access-token": tokenJWT,
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.result == "Usuário autenticado!") {
-          navigate("/home");
-        } else {
-          setAutenticado(() => true);
-        }
-      });
+    (async () => {
+      try {
+        const tokenJWT = localStorage.getItem("auth") || "";
+        await api.get("/auth", {
+          headers: {
+            "x-access-token": tokenJWT,
+          },
+        });
+        navigate("/home");
+      } catch (error) {
+        setNaoAutenticado(() => true);
+      }
+    })();
   }, []);
 
-  const executarLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const executarLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    fetch("http://localhost:3001/auth/login", {
-      method: "POST",
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-        senha: senha,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.result == "Usuário autenticado") {
-          localStorage.setItem("auth", res.token);
-          navigate("/home");
-        } else {
-          alert(res.result);
-        }
-      });
+    const formData = {
+      email,
+      senha,
+    };
+    try {
+      const { data } = await api.post("/auth/login", formData);
+      localStorage.setItem("auth", data.token);
+      navigate("/home");
+    } catch (error: any) {
+      const result = error.response.data.result;
+      alert(result);
+    }
   };
 
   const exibirEsconderSenha = () => {
@@ -85,7 +77,7 @@ export default function Login() {
 
   return (
     <>
-      {autenticado && (
+      {naoAutenticado && (
         <div className={style.tela}>
           <div className={style.container}>
             <h1 className={style.titulo}>Entrar</h1>
@@ -119,7 +111,7 @@ export default function Login() {
                 >
                   {visualizarSenha ? (
                     <AiFillEyeInvisible size={20} color="#666" />
-                    ) : (
+                  ) : (
                     <AiFillEye size={20} color="#666" />
                   )}
                 </span>

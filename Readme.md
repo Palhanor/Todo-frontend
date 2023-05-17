@@ -31,6 +31,7 @@
 - Criar um sistema de metas de longo prazo (pode vincular as tarefas às metas)
 - Adicionar notas para os dias que passaram, como uma impressão do dia
 - Permitir criar planos anuais, mensais ou semanais, e vincular as tarefas a esses planos
+- Permitir que o usuario navegue entre as tarefas com as setas para cima ou para baixo
 - Permitir o compartilhamento de tarefas (apenas ler ou apenas editar)
 - Permitir a criação de workplaces para que todas as tarefas marcadas com esse workplace sejam compartilhadas entre as pessoas que estão dentro do workplace em questão
 - Adicionar um review geral dos dias, semanas, meses, trimestres e anos (taxa de sucesso, numero de tentativas e afins)

@@ -12,13 +12,13 @@ import {
   BiCheckboxMinus,
   BiCheckboxChecked,
 } from "react-icons/bi";
+import api from "../../../service/api";
 
 export default function Categorias({
   tarefas,
   categorias,
   categoriasAtivas,
   setCategoriasAtivas,
-  requisidor,
   setCategorias,
   setTarefas,
   setExibindoModal,
@@ -46,11 +46,15 @@ export default function Categorias({
       nome: nomeNovaCategoria,
       cor: corNovaCategoria,
     };
-    const retorno = await requisidor("category", "POST", dados);
 
-    if (retorno.result == "Categoria adicionada com sucesso!") {
+    try {
+      const tokenJWT = localStorage.getItem("auth") || "";
+      const { data } = await api.post("/category", dados, {
+        headers: { "x-access-token": tokenJWT },
+      });
+
       const novaCategoria = {
-        id_categoria: retorno.id_categoria,
+        id_categoria: data.id_categoria,
         nome_categoria: nomeNovaCategoria,
         cor: corNovaCategoria,
       };
@@ -61,16 +65,19 @@ export default function Categorias({
       setCategoriasAtivas((prev) => [...prev, novaCategoria.id_categoria]);
       setNomeNovaCategoria(() => "");
       setCorNovaCategoria(() => "#e2e9f0");
-      exibirCampoCriarCategoria()
-    } else {
-      alert(retorno.result);
+      exibirCampoCriarCategoria();
+    } catch (error: any) {
+      const result = error.response.data.result;
+      alert(result);
     }
   };
 
   const editarCategoria = async (categoria: ICategoria) => {
-    const retorno = await requisidor("category", "PUT", categoria);
-
-    if (retorno.result == "Categoria editada com sucesso!") {
+    try {
+      const tokenJWT = localStorage.getItem("auth") || "";
+      await api.put("category", categoria, {
+        headers: { "x-access-token": tokenJWT },
+      });
       setCategorias((categoriasAnteriores: ICategoria[]) =>
         categoriasAnteriores.map((categoriaAnterior) =>
           categoriaAnterior.id_categoria == categoria.id_categoria
@@ -79,18 +86,18 @@ export default function Categorias({
         )
       );
       setEdicaoCategoria(() => categoriaDefault);
-    } else {
-      alert(retorno.result);
+    } catch (error: any) {
+      const result = error.response.data.result;
+      alert(result);
     }
   };
 
   const excluirCategoria = async (id: number) => {
-    const dados = {
-      id_categoria: id,
-    };
-    const retorno = await requisidor("category", "DELETE", dados);
-
-    if ((retorno.result = "Categoria apagada")) {
+    try {
+      const tokenJWT = localStorage.getItem("auth") || "";
+      await api.delete(`/category/${id}`, {
+        headers: { "x-access-token": tokenJWT },
+      });
       setCategorias((categoriasAnteriores: ICategoria[]) =>
         categoriasAnteriores.filter(
           (categoriaAnterior) => categoriaAnterior.id_categoria !== id
@@ -101,9 +108,11 @@ export default function Categorias({
         const teste = tarefasAnteriores.map((tarefa) =>
           tarefa.categoria == id ? { ...tarefa, categoria: null } : tarefa
         );
-        console.log(teste);
         return teste;
       });
+    } catch (error: any) {
+      const result = error.response.data.result;
+      console.log(error);
     }
   };
 
@@ -175,42 +184,40 @@ export default function Categorias({
         onMouseLeave={ocultarFerramentasCategoria}
       >
         <h2 className={style.tituloSecao}>Categorias</h2>
-        {mostrarFerramentas &&
-          (
-            <div className={style.ferramentas}>
-              <button
-                title="Selecionar todos"
-                aria-label="Selecionar todos"
-                className={style.ferramentaCategoria}
-                onClick={ativarTodasCategorias}
-              >
-                <BiCheckboxChecked size={22} />
-              </button>
-              <button
-                title="Desmarcar todos"
-                aria-label="Desmarcar todos"
-                className={style.ferramentaCategoria}
-                onClick={desativarTodasCategorias}
-              >
-                <BiCheckboxMinus size={22} />
-              </button>
-              <button
-                title="Adicionar categoria"
-                aria-label="Adicionar categoria"
-                onClick={exibirCampoCriarCategoria}
-                className={style.ferramentaCategoria}
-              >
-                {novaCategoria ? (
-                  <BiMinusCircle size={19} />
-                ) : (
-                  <BiPlusCircle size={19} />
-                )}
-              </button>
-            </div>
-          )
-        }
+        {mostrarFerramentas && (
+          <div className={style.ferramentas}>
+            <button
+              title="Selecionar todos"
+              aria-label="Selecionar todos"
+              className={style.ferramentaCategoria}
+              onClick={ativarTodasCategorias}
+            >
+              <BiCheckboxChecked size={22} />
+            </button>
+            <button
+              title="Desmarcar todos"
+              aria-label="Desmarcar todos"
+              className={style.ferramentaCategoria}
+              onClick={desativarTodasCategorias}
+            >
+              <BiCheckboxMinus size={22} />
+            </button>
+            <button
+              title="Adicionar categoria"
+              aria-label="Adicionar categoria"
+              onClick={exibirCampoCriarCategoria}
+              className={style.ferramentaCategoria}
+            >
+              {novaCategoria ? (
+                <BiMinusCircle size={19} />
+              ) : (
+                <BiPlusCircle size={19} />
+              )}
+            </button>
+          </div>
+        )}
       </div>
-      {novaCategoria &&
+      {novaCategoria && (
         <div className="p-0.5 pl-2 w-full box-border text-base cursor-pointer mb-3 rounded-md capitalize border border-solid border-black">
           <div className="flex justify-between items-center p-3 rounded-md">
             <input
@@ -246,7 +253,7 @@ export default function Categorias({
             </span>
           </div>
         </div>
-      }
+      )}
       <ul className={style.listaCategorias}>
         <Categoria
           key={categoriaDefault.id_categoria}

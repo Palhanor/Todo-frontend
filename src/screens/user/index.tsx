@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Usuario from "../../interfaces/usuario";
-import { modalDefault, userDefault } from "../../utils/modelos";
+import { modalDefault } from "../../utils/modelos";
 import Loading from "../Loading";
 import { BsArrowLeft } from "react-icons/bs";
 import { FaRegUserCircle } from "react-icons/fa";
@@ -10,92 +9,61 @@ import { CgDanger } from "react-icons/cg";
 import "./style.css";
 import { IModal } from "../../interfaces/modal";
 import Modal from "../../components/modal";
+import { useUsuario } from "../../hooks/usuario";
+import { abasFerramentas } from "../../interfaces/types";
+import api from "../../service/api";
 
 export default function User() {
-  const [usuario, setUsuario] = useState<Usuario>(userDefault);
+  const { user } = useUsuario();
+  const navigate = useNavigate();
 
+  // Formulario
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senhaAntiga, setSenhaAntiga] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
   const [confirmacaoSenha, setConfirmacaoSenha] = useState("");
 
-  type abasFerramentas = "conta" | "senha" | "avançado";
-
+  // Abas
   const [visualizacao, setVisualizacao] = useState<abasFerramentas>("conta");
 
   // Modal
   const [exibindoModal, setExibindoModal] = useState<IModal>(modalDefault);
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    configurarUsuario();
-  }, []);
-
-  const configurarUsuario = async () => {
-    const tokenJWT = localStorage.getItem("auth") || "";
-    const retorno = await fetch("http://localhost:3001/user", {
-      headers: {
-        "x-access-token": tokenJWT,
-      },
-    });
-    const dados = await retorno.json();
-    if (dados.result == "Acesso negado!" || dados.result == "Token inválido!") {
-      navigate("/login");
-    } else {
-      setUsuario(() => dados.usuario);
-    }
-  };
-
   const atualizarUsuario = async () => {
-    const id_usuario = usuario.id_usuario;
-    const tokenJWT = localStorage.getItem("auth") || "";
-    const retorno = await fetch(`http://localhost:3001/user`, {
-      method: "PUT",
-      headers: {
-        accept: "application/json, text/plain, */*",
-        "content-type": "application/json",
-        "x-access-token": tokenJWT,
-      },
-      body: JSON.stringify({
-        id_usuario,
-        nome,
-        email,
-        senhaAntiga,
-        novaSenha,
-        confirmacaoSenha,
-      }),
-    });
-    const resultado = await retorno.json();
+    const usuarioAtualizado = {
+      id_usuario: user.id_usuario,
+      nome,
+      email,
+      senhaAntiga,
+      novaSenha,
+      confirmacaoSenha,
+    };
 
-    if (resultado.result == "Dados do usuário alterados com sucesso!") {
+    try {
+      const tokenJWT = localStorage.getItem("auth") || "";
+      await api.put("/user", usuarioAtualizado, {
+        headers: { "x-access-token": tokenJWT },
+      });
       navigate("/home");
-    } else {
-      alert(resultado.result);
+    } catch (error: any) {
+      const result = error.response.data.result;
+      alert(result);
     }
   };
 
   const apagarUsuario = async () => {
-    const tokenJWT = localStorage.getItem("auth") || "";
-    const retorno = await fetch(`http://localhost:3001/user`, {
-      method: "DELETE",
-      headers: {
-        accept: "application/json, text/plain, */*",
-        "content-type": "application/json",
-        "x-access-token": tokenJWT,
-      },
-      body: JSON.stringify({
-        id_usuario: usuario.id_usuario,
-      }),
-    });
-    const resultado = await retorno.json();
+    try {
+      const tokenJWT = localStorage.getItem("auth") || "";
+      await api.delete(`/user/${user.id_usuario}`, {
+        headers: { "x-access-token": tokenJWT },
+      });
 
-    if (resultado.result == "Usuario apagado") {
       localStorage.removeItem("auth");
       navigate("/login");
-    } else {
-      alert(resultado.result);
+    } catch (error: any) {
+      const result = error.response.data.result;
+      alert(result);
     }
   };
 
@@ -154,14 +122,14 @@ export default function User() {
 
   return (
     <>
-      {!!usuario.id_usuario ? (
+      {!!user.id_usuario ? (
         <div className={style.tela}>
           <aside className={style.barraEsquerda}>
             <div className={style.voltar} onClick={navegarParaHome}>
               <BsArrowLeft size={24} /> Voltar
             </div>
-            <h1 className={style.nomeUsuario}>{usuario.nome}</h1>
-            <p className={style.email}>{usuario.email}</p>
+            <h1 className={style.nomeUsuario}>{user.nome}</h1>
+            <p className={style.email}>{user.email}</p>
             <div>
               <ul>
                 <li
@@ -331,7 +299,7 @@ export default function User() {
                       setExibindoModal(() => {
                         return {
                           visivel: true,
-                          titulo: `Excluir usuário: ${usuario.nome}`,
+                          titulo: `Excluir usuário: ${user.nome}`,
                           descricao:
                             "Uma vez excluído o usuário, não será possível recuperá-lo. Você tem certeza que deseja realizar esta operação?",
                           confirmacao: dispararExcluirUsurio,

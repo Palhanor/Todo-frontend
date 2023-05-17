@@ -5,11 +5,12 @@ import { tarefaDefault } from "../../../utils/modelos";
 import { useEffect, useState } from "react";
 import { BiTrash } from "react-icons/bi";
 import { FaExclamation } from "react-icons/fa";
+// import api from "../../../service/api";
+import api from "../../../service/api";
 
 export default function Editor({
   setTarefas,
   setTarefaSelecionada,
-  requisidor,
   editarTarefa,
   encerrarRedimensionamento,
   continuarRedimensionamento,
@@ -27,18 +28,21 @@ export default function Editor({
   }, [tarefaSelecionada]);
 
   const excluirTarefa = async (id: number) => {
-    const dados = { id_tarefa: id };
-    const retorno = await requisidor("tasks", "DELETE", dados);
+    try {
+      const tokenJWT = localStorage.getItem("auth") || "";
+      await api.delete(`/tasks/${id}`, {
+        headers: { "x-access-token": tokenJWT },
+      });
 
-    if (retorno.result == "Atividade excluída!") {
       setTarefas((current: Tarefa[]) =>
         current.filter((tarefa: Tarefa) => tarefa.id_tarefa !== id)
       );
       setTarefaSelecionada(() => {
         return tarefaDefault;
       });
-    } else {
-      alert(retorno.result);
+    } catch (error: any) {
+      const result = error.response.data.result;
+      alert(result);
     }
   };
 
@@ -57,27 +61,21 @@ export default function Editor({
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const id_categoria = Number(e.target.value);
-    editarTarefa(
-      {
-        ...tarefaSelecionada,
-        categoria: id_categoria == 0 ? null : id_categoria,
-      },
-      "categoria"
-    );
+    const tarefaEditada = {
+      ...tarefaSelecionada,
+      categoria: id_categoria == 0 ? null : id_categoria,
+    };
+    editarTarefa(tarefaEditada);
   };
 
   const atualiarPrioridadeTarefaSelecionada = () => {
-    editarTarefa(
-      tarefaSelecionada,
-      "prioridade"
-    );
-    setTarefaSelecionada((anterior) => {
-      return {
-        ...anterior,
-        prioridade: +!anterior.prioridade
-      }
-    })
-  }
+    const tarefaEditada = {
+      ...tarefaSelecionada,
+      prioridade: +!tarefaSelecionada.prioridade,
+    };
+    editarTarefa(tarefaEditada);
+    setTarefaSelecionada(() => tarefaEditada);
+  };
 
   const atualizarTituloTarefaSelecionada = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -87,7 +85,7 @@ export default function Editor({
       titulo: e.target.value,
     };
     setTarefaSelecionada(() => novaTarefa);
-    editarTarefa(novaTarefa, "dados");
+    editarTarefa(novaTarefa);
   };
 
   const editarViewDescricaoTarefaSelecionada = (
@@ -99,7 +97,7 @@ export default function Editor({
   };
 
   const atualizarDescricaoTarefaSelecionada = () => {
-    editarTarefa(tarefaSelecionada, "dados");
+    editarTarefa(tarefaSelecionada);
   };
 
   const atualizarDataTarefaSelecionada = (
@@ -110,7 +108,7 @@ export default function Editor({
       data_final: e.target.value,
     };
     setTarefaSelecionada(() => novaTarefa);
-    editarTarefa(novaTarefa, "dados");
+    editarTarefa(novaTarefa);
   };
 
   const style = {
@@ -169,8 +167,14 @@ export default function Editor({
             </option>
           ))}
         </select>
-        <div className="py-5 px-5 border border-solid border-l-gray-300 cursor-pointer rounded-r-md" onClick={atualiarPrioridadeTarefaSelecionada}>
-          <FaExclamation size={14} color={tarefaSelecionada.prioridade ? "#FF0000" : "#555"} />
+        <div
+          className="py-5 px-5 border border-solid border-l-gray-300 cursor-pointer rounded-r-md"
+          onClick={atualiarPrioridadeTarefaSelecionada}
+        >
+          <FaExclamation
+            size={14}
+            color={tarefaSelecionada.prioridade ? "#FF0000" : "#555"}
+          />
         </div>
       </div>
       <div className={style.campoInferior}>

@@ -1,34 +1,41 @@
 // cd .\client\doitask\
 // cd .\server\
 
-// TODO: Adicionar o sistema de tarefas excluidas
-// TODO: Adicionar um sistema de pomodoro dentro de cada tarefa separadamente (stateless)
+// TODO: Implementar o Axios para as requisições da API - trocar o fetch nos: user (try catch...)
+
+// TODO: Implementar o Redux para a gestão dos estados => hooks personalizados para descoplamento do sistema
+
+// TODO: Refatorar e otimizar os códigos Front-end do React com boas práticas (memo, useMemo, useCallback)
+
+// TODO: Ajeitar o backend - usar o prisma com modelos das entidades
+// TODO: Otimizar as validações de modificação do banco de dados no sistema
+
+// TODO: Usar o eslint junto do prettier para padronização do projeto
+
 // TODO: Ao marcar uma atividade futura como feita ele deve tirar a atividade do futuro e jogar no dia como feita
+//        Ai ela fica la e vai para o dia certo depois de virar meia noite? Ou Ja vai direto para o dia atual? E caso ela seja desmarcada?
+//        Usar o campo de realizada para inserir no dia que ela foi marcada como precedência sobre a data que foi agendada
+// TODO: Adicionar um sistema de pomodoro dentro de cada tarefa separadamente (stateless)
+// TODO: Adicionar o sistema de tarefas excluidas (excluir, recuperar e apagar permanentemente)
+// TODO: Inserir o campo de horas das tarefas (pode ser nulo) com input especifico para isso
+//        Tarefas para realizar ordenadas por hora do prazo (sem prazo vai para cima ordenadas pela hora de criação - antes da prioridades)
+//        Tarefas realizadas ordenadas por hora de realização
 
-// TODO: Implementar o Axios para as requisições da API
-// TODO: Implementar o Redux para a gestão dos estados
-// TODO: Implementar hooks personalizados para descoplamento do sistema
-
-// TODO: Inserir o campo de horas das tarefas (pode ser nulo) com input datetime-local
-// TODO: Tarefas para realizar ordenadas por hora e caso não tenha hora, por categoria... Tarefas realizadas ordenadas por hora de realização
 // TODO: Adicionar as anotações sobre o dia dentro de cada dia consolidado
 // TODO: Criar sistema de tarefas perdidas
 //        Quando clica em check deve perguntar quando foi realizada: se no mesmo dia, fica como feita, senao, duplica como feita pra o dia que feoi feita e fica como perdida no dia que estava
 //        Quando remarca apenas cria uma copia em aberto para o dia e passa a mesma para perdida
+// TODO: Adicionar as novas visualizações (histórico e excuídas)
+// TODO: Criar sistema de ajuste das visualizações dentro das configurações de usuário
+// TODO: Adicionar um campo de 0 a 100 para indicar o quão avançada está a execução daquela tarefa
 
 // TODO: Desenvolver a landing page de apresentaçaõ do sistema
 // TODO: Fazer os ajustes de responsividade no sistema (mobile)
 
-// TODO: Adicionar um sistema para permitir que o usuário faça anotações sobre o dia que se passou
-// TODO: Adicionar as novas visualizações (histórico [perdidas e realizadas], excuídas)
-// TODO: Criar sistema de ajuste das visualizações dentro das configurações de usuário
 // TODO: Fazer o tratamento dos erros no front-end antes de enviar os dados
 // TODO: Receber os erros do backend e exibir de uma forma melhorada
-// TODO: Navegar entre as tarefas visualizadas através das teclas (cima e baixo)
-// TODO: Adicionar um campo de 0 a 100 para indicar o quão avançada está a execução daquela tarefa
 
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 
 import Editor from "./Editor";
 import Categorias from "./Categorias";
@@ -38,270 +45,141 @@ import Ferramentas from "./Ferramentas";
 import Loading from "../Loading";
 import Modal from "../../components/modal";
 
+import api from "../../service/api";
+
+import { useRedimensionador } from "../../hooks/redimensionador";
+
 import { filtrarTarefasCategoriasAbas } from "../../utils/tarefas";
-import { modalDefault, tarefaDefault, userDefault } from "../../utils/modelos";
+import { modalDefault, tarefaDefault } from "../../utils/modelos";
 
 import Tarefa from "../../interfaces/tarefa";
-import Usuario from "../../interfaces/usuario";
 import Categoria from "../../interfaces/categoria";
 import { IModal } from "../../interfaces/modal";
-import { abas, edicaoTarefa } from "../../interfaces/types";
-
-import { GrFormClose } from "react-icons/gr";
+import { abas } from "../../interfaces/types";
 
 import "./style.css";
+
 import { FaExclamation } from "react-icons/fa";
+import { GrFormClose } from "react-icons/gr";
+import { useUsuario } from "../../hooks/usuario";
 
 export default function Home() {
-  const navigate = useNavigate();
+  // Sistema de redimensionamento nao consegue ser acessado por outros componentes
+  const {
+    colEdicao,
+    colFerramentas,
+    continuarRedimensionamento,
+    encerrarRedimensionamento,
+    iniciarRedimensionamentoBarraFerramentas,
+    iniciarRedimensionamentoEditorTarefa,
+    movimentarColunaDireita,
+    movimentarColunaEsquerda,
+  } = useRedimensionador();
+  const { user } = useUsuario();
 
-  // Pegos do banco de dados
-  const [user, setUser] = useState<Usuario>(userDefault);
+  // Retornos database
   const [tarefas, setTarefas] = useState<Tarefa[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const listaAbasVisualizacao: abas[] = ["atuais", "atrasadas", "realizadas"];
-
   // Valores selecionados
   const [tarefaSelecionada, setTarefaSelecionada] =
     useState<Tarefa>(tarefaDefault);
   const [categoriasAtivas, setCategoriasAtivas] = useState<number[]>([]);
   const [abaTarefas, setAbaTarefas] = useState<abas>("atuais");
-
-  // Dimensões das barras laterais
-  const larguraTela = window.innerWidth;
-  const [colFerramentas, setColFerramentas] = useState<number>(Number(localStorage.getItem("colEsq")) || larguraTela / 4);
-  const [colEdicao, setColEdicao] = useState<number>(Number(localStorage.getItem("colDir")) || larguraTela / 4);
-  const [redimensionandoFerramentas, setRedimensionandoFerramentas] =
-    useState<boolean>(false);
-  const [redimensionandoEdicao, setRedimensionandoEdicao] =
-    useState<boolean>(false);
-
   // Filtros
   const [filtroTexto, setFiltroTexto] = useState<string>("");
   const [filtroData, setFiltroData] = useState<string>("");
   const [filtroPrioridade, setFiltroPrioridade] = useState<boolean>(false);
-
   // Modal
   const [exibindoModal, setExibindoModal] = useState<IModal>(modalDefault);
 
-  // ESTRUTURA DAS REQUISIÇÕES
-  const requisidor = async (rota: string, metodo?: string, dados?: any) => {
-    const tokenJWT = localStorage.getItem("auth") || "";
-    if (metodo && dados) {
-      const retorno = await fetch(`http://localhost:3001/${rota}`, {
-        method: `${metodo}`,
-        headers: {
-          accept: "application/json, text/plain, */*",
-          "content-type": "application/json",
-          "x-access-token": tokenJWT,
-        },
-        body: JSON.stringify(dados),
-      });
-      const result = await retorno.json();
-      return result;
-    } else {
-      const retorno = await fetch(`http://localhost:3001/${rota}`, {
-        headers: {
-          "x-access-token": tokenJWT,
-        },
-      });
-      const result = await retorno.json();
-      return result;
-    }
-  };
-
   // CONEXÃO INICIAL COM O BANCO DE DADOS
   useEffect(() => {
-    configurarUsuario();
     listarTarefas();
     listarCategorias();
   }, []);
 
-  const configurarUsuario = async () => {
-    const retorno = await requisidor("user");
-    const acessoNegado = retorno.result == "Acesso negado!";
-    const tokenInvalido = retorno.result == "Token inválido!";
+  const listarTarefas = useCallback(async (): Promise<void> => {
+    try {
+      const tokenJWT = localStorage.getItem("auth") || "";
+      const { data } = await api.get("/tasks", {
+        headers: { "x-access-token": tokenJWT },
+      });
+      const tarefas: Tarefa[] = data.map((tarefa: Tarefa) => {
+        return { ...tarefa, data_final: tarefa.data_final.substring(0, 10) };
+      });
+      setTarefas(() => tarefas);
+    } catch (error: any) {}
+  }, [api, setTarefas]);
 
-    if (acessoNegado || tokenInvalido) navigate("/login");
-    else setUser(() => retorno.usuario);
-  };
-
-  const listarTarefas = async () => {
-    const retorno: Tarefa[] = await requisidor("tasks");
-    const tarefas: Tarefa[] = retorno.map((tarefa: Tarefa) => {
-      return { ...tarefa, data_final: tarefa.data_final.substring(0, 10) };
-    });
-    setTarefas(() => tarefas);
-  };
-
-  const listarCategorias = async () => {
-    const retorno: Categoria[] = await requisidor("category");
-    const listaIdsCategorias = retorno.map(
-      (retorno: Categoria) => retorno.id_categoria
-    );
-    setCategorias(() => retorno);
-    setCategoriasAtivas(() => [0, ...listaIdsCategorias]);
-  };
+  const listarCategorias = useCallback(async (): Promise<void> => {
+    try {
+      const tokenJWT = localStorage.getItem("auth") || "";
+      const { data } = await api.get("/category", {
+        headers: { "x-access-token": tokenJWT },
+      });
+      const semCategoriaId = 0;
+      const listaIdsCategorias = data.map(
+        (retorno: Categoria) => retorno.id_categoria
+      );
+      setCategorias(() => data);
+      setCategoriasAtivas(() => [semCategoriaId, ...listaIdsCategorias]);
+    } catch (error) {}
+  }, [api, setCategorias, setCategoriasAtivas]);
 
   // CONEXÃO COM O BANCO DE DADOS (EDIÇÃO)
-  const editarTarefa = async (tarefa: Tarefa, tipo: edicaoTarefa) => {
-    if (tipo == "check")
-      setTarefaSelecionada(() => {
-        return tarefaDefault;
+  const editarTarefa = async (tarefaRecebida: Tarefa): Promise<void> => {
+    try {
+      const tokenJWT = localStorage.getItem("auth") || "";
+      await api.put("tasks", tarefaRecebida, {
+        headers: { "x-access-token": tokenJWT },
       });
 
-    const dados = {
-      id_tarefa: tarefa.id_tarefa,
-      titulo: tarefa.titulo,
-      descricao: tarefa.descricao,
-      data_final: tarefa.data_final,
-      categoria: tarefa.categoria,
-      realizada: tipo == "check" ? +!tarefa.realizada : +tarefa.realizada,
-      prioridade: tipo == "prioridade" ? +!tarefa.prioridade : +tarefa.prioridade,
-    };
-    const retorno = await requisidor("tasks", "PUT", dados);
-
-    if (retorno.result == "Atividade atualizada com sucesso!") {
-      if (tipo == "check") {
-        editarTarefaCheck(tarefa);
-      } else if (tipo == "dados") {
-        editarTarefaDados(tarefa);
-      } else if (tipo == "categoria") {
-        editarTarefaCategoria(tarefa);
-      } else if (tipo == "prioridade") {
-        editarTarefaPrioridade(tarefa);
-      }
-    } else {
-      alert(retorno.result);
+      setTarefas((tarefas) =>
+        tarefas.map((tarefa) =>
+          tarefa.id_tarefa == tarefaRecebida.id_tarefa ? tarefaRecebida : tarefa
+        )
+      );
+    } catch (error: any) {
+      const result = error.response.data.result;
+      alert(result);
     }
   };
 
-  // ACESSÓRIOS PARA EDIÇÃO
-  const editarTarefaCheck = (tarefa: Tarefa) => {
-    setTarefas((current: Tarefa[]) =>
-      current.map((tarefaAtual: Tarefa) => {
-        if (tarefaAtual.id_tarefa == tarefa.id_tarefa)
-          return {
-            ...tarefaAtual,
-            realizada: +!tarefa.realizada,
-          };
-        else return tarefaAtual;
-      })
-    );
-  };
-
-  const editarTarefaDados = (tarefa: Tarefa) => {
-    setTarefas((current: Tarefa[]) =>
-      current.map((tarefaAtual: Tarefa) => {
-        if (tarefaAtual.id_tarefa == tarefa.id_tarefa) return tarefa;
-        else return tarefaAtual;
-      })
-    );
-  };
-
-  const editarTarefaCategoria = (tarefa: Tarefa) => {
-    setTarefaSelecionada(() => tarefa);
-    setTarefas((tarefas) =>
-      tarefas.map((tarefaAntiga) => {
-        return tarefaAntiga.id_tarefa !== tarefa.id_tarefa
-          ? tarefaAntiga
-          : tarefa;
-      })
-    );
-  };
-
-  const editarTarefaPrioridade = (tarefa: Tarefa) => {
-    setTarefas((current: Tarefa[]) =>
-      current.map((tarefaAtual: Tarefa) => {
-        if (tarefaAtual.id_tarefa == tarefa.id_tarefa)
-          return {
-            ...tarefaAtual,
-            prioridade: +!tarefa.prioridade,
-          };
-        else return tarefaAtual;
-      })
-    );
-  }
-
   // FERRAMENTAS GERAIS
-  const pegarNumeroTarefasVisualizacao = (nome: abas) => {
-    const listaTarefasFiltradas = filtrarTarefasCategoriasAbas(
+  const pegarNumeroTarefasVisualizacao = (visualizacao: abas): number => {
+    return filtrarTarefasCategoriasAbas(
       tarefas,
-      nome,
+      visualizacao,
       categoriasAtivas,
       filtroTexto,
       filtroData,
       filtroPrioridade
-    );
-    return listaTarefasFiltradas.length;
+    ).length;
   };
 
-  const modificarVisualizacaoTarefas = (aba: abas) => {
+  const modificarVisualizacaoTarefas = (aba: abas): void => {
     setAbaTarefas(() => aba);
   };
 
-  // SISTEMA DE REDIMENSIONAMENTO
-  const iniciarRedimensionamentoBarraFerramentas = () => {
-    setRedimensionandoFerramentas(() => true);
-  };
-
-  const iniciarRedimensionamentoEditorTarefa = () => {
-    setRedimensionandoEdicao(() => true);
-  };
-
-  const movimentarColunaEsquerda = (
-    e: React.MouseEvent<HTMLElement, MouseEvent>
-  ) => {
-    if (redimensionandoFerramentas) {
-      let novaLargura: number;
-      if (e.clientX <= larguraTela / 5) novaLargura = larguraTela / 5;
-      else if (e.clientX >= larguraTela / 3) novaLargura = larguraTela / 3;
-      else novaLargura = e.clientX;
-      localStorage.setItem("colEsq", String(novaLargura))
-      setColFerramentas(() => novaLargura);
-    }
-  };
-
-  const movimentarColunaDireita = (
-    e: React.MouseEvent<HTMLElement, MouseEvent>
-  ) => {
-    if (redimensionandoEdicao) {
-      const tamanho = larguraTela - e.clientX;
-      let novaLargura: number;
-      if (tamanho <= larguraTela / 5) novaLargura = larguraTela / 5;
-      else if (tamanho >= larguraTela / 2.5) novaLargura = larguraTela / 2.5;
-      else novaLargura = tamanho;
-      localStorage.setItem("colDir", String(novaLargura))
-      setColEdicao(() => novaLargura);
-    }
-  };
-
-  const continuarRedimensionamento = (
-    e: React.MouseEvent<HTMLElement, MouseEvent>
-  ) => {
-    movimentarColunaEsquerda(e);
-    movimentarColunaDireita(e);
-  };
-
-  const encerrarRedimensionamento = () => {
-    setRedimensionandoFerramentas(() => false);
-    setRedimensionandoEdicao(() => false);
-  };
-
   // HANDLER DE INPUT
-  const handleFiltroTextoValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFiltroTextoValue = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     setFiltroTexto(() => e.target.value);
   };
 
-  const limparFiltroTextoValue = () => {
+  const limparFiltroTextoValue = (): void => {
     setFiltroTexto(() => "");
   };
 
-  const handleFiltroDataValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFiltroDataValue = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     setFiltroData(() => e.target.value);
   };
 
-  const limparFiltroDataValue = () => {
+  const limparFiltroDataValue = (): void => {
     setFiltroData(() => "");
   };
 
@@ -381,8 +259,14 @@ export default function Home() {
                     </span>
                   </div>
                   <div className="flex">
-                    <div className="p-4 rounded-md bg-white mr-3 cursor-pointer" onClick={() => setFiltroPrioridade((prev) => !prev)}>
-                      <FaExclamation size={12} color={filtroPrioridade ? "#FF0000" : "#555"} />
+                    <div
+                      className="p-4 rounded-md bg-white mr-3 cursor-pointer"
+                      onClick={() => setFiltroPrioridade((prev) => !prev)}
+                    >
+                      <FaExclamation
+                        size={12}
+                        color={filtroPrioridade ? "#FF0000" : "#555"}
+                      />
                     </div>
                     <input
                       type="date"
@@ -405,7 +289,6 @@ export default function Home() {
                   categorias={categorias}
                   categoriasAtivas={categoriasAtivas}
                   setCategoriasAtivas={setCategoriasAtivas}
-                  requisidor={requisidor}
                   setCategorias={setCategorias}
                   setTarefas={setTarefas}
                   setExibindoModal={setExibindoModal}
@@ -430,7 +313,6 @@ export default function Home() {
                 categorias={categorias}
                 tarefaSelecionada={tarefaSelecionada}
                 user={user}
-                requisidor={requisidor}
                 setTarefas={setTarefas}
                 setTarefaSelecionada={setTarefaSelecionada}
               />
@@ -462,7 +344,6 @@ export default function Home() {
               <Editor
                 setTarefas={setTarefas}
                 setTarefaSelecionada={setTarefaSelecionada}
-                requisidor={requisidor}
                 editarTarefa={editarTarefa}
                 encerrarRedimensionamento={encerrarRedimensionamento}
                 continuarRedimensionamento={continuarRedimensionamento}

@@ -3,12 +3,12 @@ import { pegarDataAtual } from "../../../utils/datas";
 import Tarefa from "../../../interfaces/tarefa";
 import { FormTarefaProps } from "../../../interfaces/props";
 import { FaExclamation } from "react-icons/fa";
+import api from "../../../service/api";
 
 export default function FormTarefa({
   user,
   categorias,
   tarefaSelecionada,
-  requisidor,
   setTarefas,
   setTarefaSelecionada,
 }: FormTarefaProps) {
@@ -28,33 +28,37 @@ export default function FormTarefa({
   const inserirTarefa = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const categoria = selectCategoria ? selectCategoria : null;
     const dados = {
       usuario: user.id_usuario,
       titulo: titulo,
       descricao: descricao,
       dataFinal: dataFinal,
-      categoria: categoria,
+      categoria: selectCategoria ? selectCategoria : null,
       prioridade: prioridade ? 1 : 0,
     };
-    const retorno = await requisidor("tasks", "POST", dados);
 
-    if (retorno.result == "Atividade adicionada com sucesso!") {
+    try {
+      const tokenJWT = localStorage.getItem("auth") || "";
+      const { data } = await api.post("/tasks", dados, {
+        headers: { "x-access-token": tokenJWT },
+      });
+
       const novaTarefa = {
-        id_tarefa: retorno.id_tarefa,
+        id_tarefa: data.id_tarefa,
         titulo,
         descricao,
         data_final: dataFinal,
         categoria: Number(selectCategoria),
         realizada: 0,
-        prioridade: Number(prioridade)
+        prioridade: Number(prioridade),
       };
       setTarefas((tarefasAntigas: Tarefa[]) => [...tarefasAntigas, novaTarefa]);
       setTarefaSelecionada(() => novaTarefa);
       setTitulo(() => "");
       setPrioridade(() => false);
-    } else {
-      alert(retorno.result);
+    } catch (error: any) {
+      const result = error.response.data.result;
+      alert(result);
     }
   };
 
@@ -116,7 +120,10 @@ export default function FormTarefa({
               </option>
             ))}
           </select>
-          <div className="py-5 px-5 border border-solid border-l-gray-300 cursor-pointer rounded-r-md" onClick={() => setPrioridade((prev) => !prev)}>
+          <div
+            className="py-5 px-5 border border-solid border-l-gray-300 cursor-pointer rounded-r-md"
+            onClick={() => setPrioridade((prev) => !prev)}
+          >
             <FaExclamation size={14} color={prioridade ? "#FF0000" : "#555"} />
           </div>
         </div>

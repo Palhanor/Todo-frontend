@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../service/api";
 
 export default function Register() {
-  const [autenticado, setAutenticado] = useState(false);
+  const [naoAutenticado, setNaoAutenticado] = useState(false);
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -10,50 +11,45 @@ export default function Register() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const tokenJWT = localStorage.getItem("auth") || "";
-    fetch("http://localhost:3001/auth", {
-      headers: {
-        "x-access-token": tokenJWT,
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.result == "Usuário autenticado!") {
-          navigate("/home");
-        } else {
-          setAutenticado(() => true);
-        }
-      });
+    (async () => {
+      try {
+        const tokenJWT = localStorage.getItem("auth") || "";
+        await api.get("/auth", {
+          headers: {
+            "x-access-token": tokenJWT,
+          },
+        });
+        navigate("/home");
+      } catch (error) {
+        setNaoAutenticado(() => true);
+      }
+    })();
   });
 
-  const realiarCadastro = (e: React.FormEvent<HTMLFormElement>) => {
+  const realiarCadastro = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    fetch("http://localhost:3001/auth/register", {
-      method: "POST",
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        nome: nome,
-        email: email,
-        senha: senha,
-        senhaConfirmacao: senhaConfirmacao,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.result == "Cadastro realizado com sucesso") {
-          setNome(() => "");
-          setEmail(() => "");
-          setSenha(() => "");
-          setSenhaConfirmacao(() => "");
-          localStorage.setItem("auth", res.token);
-          navigate("/home");
-        } else {
-          alert(res.result);
-        }
-      });
+
+    const formData = {
+      nome: nome,
+      email: email,
+      senha: senha,
+      senhaConfirmacao: senhaConfirmacao,
+    };
+
+    try {
+      const { data } = await api.post("/auth/register", formData);
+
+      setNome(() => "");
+      setEmail(() => "");
+      setSenha(() => "");
+      setSenhaConfirmacao(() => "");
+
+      localStorage.setItem("auth", data.token);
+      navigate("/home");
+    } catch (error: any) {
+      const result = error.response.data.result;
+      alert(result);
+    }
   };
 
   const handleNomeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +83,7 @@ export default function Register() {
 
   return (
     <>
-      {autenticado && (
+      {naoAutenticado && (
         <div className={style.tela}>
           <div className={style.container}>
             <h1 className={style.titulo}>Cadastro</h1>

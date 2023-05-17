@@ -8,8 +8,7 @@ import { IModal } from "./modal";
 export interface EditorProps {
     setTarefas: React.Dispatch<React.SetStateAction<Tarefa[]>>;
     setTarefaSelecionada: React.Dispatch<React.SetStateAction<Tarefa>>;
-    requisidor: (rota: string, metodo?: string, dados?: any) => Promise<any>;
-    editarTarefa: (tarefa: Tarefa, tipo: edicaoTarefa) => Promise<void>;
+    editarTarefa: (tarefa: Tarefa) => Promise<void>;
     encerrarRedimensionamento: () => void
     continuarRedimensionamento: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void
     setExibindoModal: React.Dispatch<React.SetStateAction<IModal>>;
@@ -23,7 +22,6 @@ export interface CategoriasProps {
     categorias: Categoria[];
     categoriasAtivas: number[];
     setCategoriasAtivas: React.Dispatch<React.SetStateAction<number[]>>;
-    requisidor: (rota: string, metodo?: string, dados?: any) => Promise<any>;
     setCategorias: React.Dispatch<React.SetStateAction<Categoria[]>>;
     setTarefas: React.Dispatch<React.SetStateAction<Tarefa[]>>;
     setExibindoModal: React.Dispatch<React.SetStateAction<IModal>>;
@@ -38,7 +36,7 @@ export interface TarefasProps {
     filtroTexto: string;
     filtroData: string;
     filtroPrioridade: boolean;
-    editarTarefa: (tarefa: Tarefa, tipo: edicaoTarefa) => Promise<void>;
+    editarTarefa: (tarefa: Tarefa) => Promise<void>;
     setTarefaSelecionada: React.Dispatch<React.SetStateAction<Tarefa>>;
 }
 
@@ -46,7 +44,6 @@ export interface FormTarefaProps {
     categorias: Categoria[];
     tarefaSelecionada: Tarefa;
     user: Usuario;
-    requisidor: (rota: string, metodo?: string, dados?: any) => Promise<any>;
     setTarefas: React.Dispatch<React.SetStateAction<Tarefa[]>>;
     setTarefaSelecionada: React.Dispatch<React.SetStateAction<Tarefa>>;
 }

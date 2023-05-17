@@ -22,19 +22,22 @@ export default function Tarefas({
   editarTarefa,
   setTarefaSelecionada,
 }: TarefasProps) {
-
   const tarefasRealizadasNoFinal = (listaTarefas: Tarefa[]) => {
-    const tarefasRealizadas = listaTarefas.filter(tarefa => tarefa.realizada == 1)
-    const tarefasPendentes = listaTarefas.filter(tarefa => tarefa.realizada == 0)
-
-    const tarefasRealizadasOrdenadas = tarefasRealizadas.sort((a: Tarefa, b: Tarefa) =>
-      a.prioridade < b.prioridade ? 1 : -1
+    const tarefasRealizadas = listaTarefas.filter(
+      (tarefa) => tarefa.realizada == 1
     );
-    const tarefasPendentesOrdenadas = tarefasPendentes.sort((a: Tarefa, b: Tarefa) =>
-      a.prioridade < b.prioridade ? 1 : -1
+    const tarefasPendentes = listaTarefas.filter(
+      (tarefa) => tarefa.realizada == 0
     );
 
-    return [...tarefasPendentesOrdenadas, ...tarefasRealizadasOrdenadas]
+    const tarefasRealizadasOrdenadas = tarefasRealizadas.sort(
+      (a: Tarefa, b: Tarefa) => (a.prioridade < b.prioridade ? 1 : -1)
+    );
+    const tarefasPendentesOrdenadas = tarefasPendentes.sort(
+      (a: Tarefa, b: Tarefa) => (a.prioridade < b.prioridade ? 1 : -1)
+    );
+
+    return [...tarefasPendentesOrdenadas, ...tarefasRealizadasOrdenadas];
   };
 
   const selecionarTarefaAbrirEditor = (tarefa: Tarefa) => {
@@ -43,6 +46,18 @@ export default function Tarefas({
         ? tarefaDefault
         : tarefa;
     });
+  };
+
+  const checkTarefa = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    tarefa: Tarefa
+  ) => {
+    e.stopPropagation;
+    const tarefaEditada: Tarefa = {
+      ...tarefa,
+      realizada: +!tarefa.realizada,
+    };
+    editarTarefa(tarefaEditada);
   };
 
   const style = {
@@ -85,20 +100,21 @@ export default function Tarefas({
                         tarefa.id_tarefa === tarefaSelecionada.id_tarefa
                           ? "#ebeff5"
                           : "transparent",
-                      borderLeft: `4px solid ${tarefa.categoria
-                        ? categorias.find(
-                          (categoria) =>
-                            categoria.id_categoria == tarefa.categoria
-                        )?.cor
-                        : "#f7f9fa"
-                        }`,
+                      borderLeft: `4px solid ${
+                        tarefa.categoria
+                          ? categorias.find(
+                              (categoria) =>
+                                categoria.id_categoria == tarefa.categoria
+                            )?.cor
+                          : "#f7f9fa"
+                      }`,
                     }}
                   >
                     <div>
                       <input
                         type="checkbox"
                         checked={!!tarefa.realizada}
-                        onChange={() => editarTarefa(tarefa, "check")}
+                        onChange={(e) => checkTarefa(e, tarefa)}
                         className={style.check}
                       />
                     </div>
@@ -109,9 +125,10 @@ export default function Tarefas({
                       <h3
                         className={
                           style.nome +
-                          ` ${tarefa.realizada
-                            ? "line-through text-gray-500"
-                            : tarefa.data_final < pegarDataAtual()
+                          ` ${
+                            tarefa.realizada
+                              ? "line-through text-gray-500"
+                              : tarefa.data_final < pegarDataAtual()
                               ? "text-red-700"
                               : ""
                           }`
